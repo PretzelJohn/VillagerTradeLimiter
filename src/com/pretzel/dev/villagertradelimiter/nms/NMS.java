@@ -1,7 +1,6 @@
 package com.pretzel.dev.villagertradelimiter.nms;
 
 import com.pretzel.dev.villagertradelimiter.lib.Util;
-import org.bukkit.ChatColor;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

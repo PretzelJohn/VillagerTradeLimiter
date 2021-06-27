@@ -57,7 +57,7 @@ public class VillagerTradeLimiter extends JavaPlugin {
         final CommandBase vtl = new CommandBase("villagertradelimiter", "villagertradelimiter.use", p -> this.help(p));
         vtl.addSub(new CommandBase("reload", "villagertradelimiter.reload", p -> {
             loadSettings();
-            p.sendMessage(reloaded);
+            if(p != null) p.sendMessage(reloaded);
         }));
         this.getCommand("villagertradelimiter").setExecutor(vtl);
         this.getCommand("villagertradelimiter").setTabCompleter(vtl);
