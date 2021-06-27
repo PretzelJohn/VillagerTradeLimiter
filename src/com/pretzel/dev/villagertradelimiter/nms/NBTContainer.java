@@ -18,7 +18,7 @@ public class NBTContainer {
         final CraftEntity craftEntity = new CraftEntity(nms);
         final NMSEntity nmsEntity = new NMSEntity(nms);
         final Class<?> tgc;
-        if(nms.getVersion().compareTo("1.17_R1") < 0)
+        if(nms.getVersion().compareTo("v1.17_R1") < 0)
             tgc = nms.getNMSClass("server."+nms.getVersion()+".NBTTagCompound");
         else
             tgc = nms.getNMSClass("nbt.NBTTagCompound");

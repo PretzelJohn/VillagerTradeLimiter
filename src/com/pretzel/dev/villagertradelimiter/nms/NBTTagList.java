@@ -11,7 +11,7 @@ public class NBTTagList
     public NBTTagList(final NMS nms, final Object self) {
         this.nms = nms;
         this.self = self;
-        if(nms.getVersion().compareTo("1.17_R1") < 0)
+        if(nms.getVersion().compareTo("v1.17_R1") < 0)
             this.c = nms.getNMSClass("server."+nms.getVersion()+".NBTTagList");
         else
             this.c = nms.getNMSClass("nbt.NBTTagList");
