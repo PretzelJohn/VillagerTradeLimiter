@@ -8,7 +8,7 @@ public class NMSEntity {
 
     public NMSEntity(final NMS nms) {
         this.nms = nms;
-        if(nms.getVersion().compareTo("v1.17_R1") < 0)
+        if(nms.getVersion().compareTo("v1_17_R1") < 0)
             this.c = nms.getNMSClass("server."+nms.getVersion()+".Entity");
         else
             this.c = nms.getNMSClass("world.entity.Entity");
