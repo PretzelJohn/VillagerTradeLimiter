@@ -1,0 +1,25 @@
+name: VillagerTradeLimiter
+author: PretzelJohn
+main: com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter
+version: 1.2.0
+api-version: 1.14
+
+commands:
+  villagertradelimiter:
+    description: Base command for VTL
+    usage: /<command>
+    permission: villagertradelimiter.use
+    aliases: vtl
+permissions:
+  villagertradelimiter.*:
+    description: Gives access to all commands.
+    children:
+      villagertradelimiter.use: true
+      villagertradelimiter.reload: true
+    default: op
+  villagertradelimiter.use:
+    description: Allows players to use VillagerTradeLimiter.
+    default: op
+  villagertradelimiter.reload:
+    description: Allows players to reload config.yml.
+    default: op

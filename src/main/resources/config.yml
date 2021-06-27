@@ -1,0 +1,50 @@
+#---------------------------------------------------------------------------------#
+#                          VTL ~ VillagerTradeLimiter                             #
+#                                Version: 1.2.0                                   #
+#                                By: PretzelJohn                                  #
+#---------------------------------------------------------------------------------#
+
+
+#-------------------------------- GLOBAL SETTINGS --------------------------------#
+# This helps me keep track of what server versions are being used. Please leave this set to true.
+bStats: true
+
+# Set this to true if you want to completely disable ALL villager trading.
+DisableTrading: false
+
+# The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases.
+#   * Set to -1 to disable this feature and keep vanilla behavior.
+#   * Set to a number between 0 and 5 to set the maximum HotV effect level players can have
+MaxHeroLevel: 1
+
+# The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases.
+#   * Set to -1.0 to disable this feature and keep vanilla behavior
+#   * Set to a number between 0.0 and 1.0 to set the maximum discount a player can get. (NOTE: 30% = 0.3)
+MaxDiscount: 0.3
+
+# The maximum demand for all items. This limits demand-based price increases.
+#   * Set to -1 to disable this feature and keep vanilla behavior
+#   * Set to 0 or higher to set the maximum demand for all items
+# WARNING: The previous demand cannot be recovered if it was higher than the MaxDemand.
+MaxDemand: -1
+
+
+#-------------------------------- PER-ITEM SETTINGS --------------------------------#
+# Override the global settings for individual items. To disable, set like this --> Overrides: none
+# To enable, add items below!
+#   * Enchanted books must follow the format: enchantment_name_level (ex: mending_1)
+#   * All other items must follow the format: item_name (ex: stone_bricks)
+# For each item you add, you can override MaxDiscount and/or MaxDemand.
+Overrides:
+  mending_1:
+    MaxDiscount: 0.1
+    MaxDemand: 36
+  depth_strider_3:
+    MaxDiscount: 0.6
+  name_tag:
+    MaxDiscount: -1.0
+    MaxDemand: 60
+  clock:
+    MaxDemand: 12
+  paper:
+    MaxDiscount: 0.1
