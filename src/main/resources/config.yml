@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------------------#
 #                          VTL ~ VillagerTradeLimiter                             #
-#                                Version: 1.2.1                                   #
+#                                Version: 1.3.0                                   #
 #                                By: PretzelJohn                                  #
 #---------------------------------------------------------------------------------#
 
@@ -9,8 +9,10 @@
 # This helps me keep track of what server versions are being used. Please leave this set to true.
 bStats: true
 
-# Set this to true if you want to completely disable ALL villager trading.
-DisableTrading: false
+# Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
+DisableTrading:
+  - world_nether
+  - world_the_end
 
 # The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases.
 #   * Set to -1 to disable this feature and keep vanilla behavior.
@@ -34,7 +36,7 @@ MaxDemand: -1
 # To enable, add items below!
 #   * Enchanted books must follow the format: enchantment_name_level (ex: mending_1)
 #   * All other items must follow the format: item_name (ex: stone_bricks)
-# For each item you add, you can override MaxDiscount and/or MaxDemand.
+# For each item you add, you can disable the trade (set Disabled: true), or override MaxDiscount and/or MaxDemand.
 Overrides:
   mending_1:
     MaxDiscount: 0.1
@@ -47,4 +49,4 @@ Overrides:
   clock:
     MaxDemand: 12
   paper:
-    MaxDiscount: 0.1
+    Disabled: true

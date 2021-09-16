@@ -1,5 +1,5 @@
 package com.pretzel.dev.villagertradelimiter.lib;
 
 public interface Callback<T> {
-    void call(T result);
+    void call(T result, String[] args);
 }

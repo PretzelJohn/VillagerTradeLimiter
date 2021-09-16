@@ -54,10 +54,10 @@ public class VillagerTradeLimiter extends JavaPlugin {
     //Registers plugin commands
     private void registerCommands() {
         final String reloaded = Util.replaceColors("&eVillagerTradeLimiter &ahas been reloaded!");
-        final CommandBase vtl = new CommandBase("villagertradelimiter", "villagertradelimiter.use", p -> this.help(p));
-        vtl.addSub(new CommandBase("reload", "villagertradelimiter.reload", p -> {
+        final CommandBase vtl = new CommandBase("villagertradelimiter", "villagertradelimiter.use", (p,args) -> this.help(p));
+        vtl.addSub(new CommandBase("reload", "villagertradelimiter.reload", (p,args) -> {
             loadSettings();
-            if(p != null) p.sendMessage(reloaded);
+            Util.sendMsg(reloaded, p);
         }));
         this.getCommand("villagertradelimiter").setExecutor(vtl);
         this.getCommand("villagertradelimiter").setTabCompleter(vtl);

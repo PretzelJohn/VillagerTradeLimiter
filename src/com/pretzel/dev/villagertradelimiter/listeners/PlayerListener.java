@@ -19,10 +19,11 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerListener implements Listener {
-    private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.DIAMOND_SWORD };
+    private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_AXE, Material.NETHERITE_HOE, Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL, Material.NETHERITE_SWORD, Material.NETHERITE_HELMET, Material.NETHERITE_CHESTPLATE, Material.NETHERITE_LEGGINGS, Material.NETHERITE_BOOTS };
 
     private final VillagerTradeLimiter instance;
     private final NMS nms;
@@ -39,9 +40,21 @@ public class PlayerListener implements Listener {
         if(Util.isNPC(villager)) return; //Skips NPCs
         if(villager.getProfession() == Villager.Profession.NONE || villager.getProfession() == Villager.Profession.NITWIT) return; //Skips non-trading villagers
         if(villager.getRecipeCount() == 0) return; //Skips non-trading villagers
-        if(instance.getCfg().getBoolean("DisableTrading", false)) {
-            event.setCancelled(true);
-            return;
+
+        //DisableTrading feature
+        if(instance.getCfg().isBoolean("DisableTrading")) {
+            if(instance.getCfg().getBoolean("DisableTrading", false)) {
+                event.setCancelled(true);
+                return;
+            }
+        } else {
+            List<String> disabledWorlds = instance.getCfg().getStringList("DisableTrading");
+            for(String world : disabledWorlds) {
+                if(event.getPlayer().getWorld().getName().equals(world)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
 
         final Player player = event.getPlayer();
@@ -51,6 +64,7 @@ public class PlayerListener implements Listener {
         this.maxDemand(villager);
     }
 
+    //Hero of the Village effect limiter feature
     private void hotv(final Player player) {
         final PotionEffectType effect = PotionEffectType.HERO_OF_THE_VILLAGE;
         if(!player.hasPotionEffect(effect)) return; //Skips when player doesn't have HotV
@@ -66,6 +80,7 @@ public class PlayerListener implements Listener {
         }
     }
 
+    //MaxDiscount feature - limits the lowest discounted price to a % of the base price
     private void maxDiscount(final Villager villager, final Player player) {
         final List<MerchantRecipe> recipes = villager.getRecipes();
         int a = 0, b = 0, c = 0, d = 0, e = 0;
@@ -92,16 +107,20 @@ public class PlayerListener implements Listener {
             }
         }
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
+
+        final ArrayList<MerchantRecipe> finalRecipes = new ArrayList<>();
         for (final MerchantRecipe recipe : recipes) {
             final int x = recipe.getIngredients().get(0).getAmount();
             final float p0 = this.getPriceMultiplier(recipe);
             final int w = 5 * a + b + c - d - 5 * e;
             final float y = x - p0 * w;
+            boolean disabled = false;
             double maxDiscount = instance.getCfg().getDouble("MaxDiscount", 0.3);
             if(overrides != null) {
-                for (final String k : overrides.getKeys(false)) {
+                for(final String k : overrides.getKeys(false)) {
                     final ConfigurationSection item = this.getItem(recipe, k);
-                    if (item != null) {
+                    if(item != null) {
+                        disabled = item.getBoolean("Disabled", false);
                         maxDiscount = item.getDouble("MaxDiscount", maxDiscount);
                         break;
                     }
@@ -116,9 +135,13 @@ public class PlayerListener implements Listener {
             } else {
                 recipe.setPriceMultiplier(p0);
             }
+            if(!disabled) finalRecipes.add(recipe);
         }
+        villager.setRecipes(finalRecipes);
+        Bukkit.getScheduler().runTaskLater(instance, () -> villager.setRecipes(recipes), 0);
     }
 
+    //MaxDemand feature - limits demand-based price increases
     private void maxDemand(final Villager villager) {
         List<MerchantRecipe> recipes = villager.getRecipes();
         final NBTContainer vnbt = new NBTContainer(this.nms, villager);
@@ -147,6 +170,7 @@ public class PlayerListener implements Listener {
         vnbt.saveTag(villager, vtag);
     }
 
+    //Returns the price multiplier for a given trade
     private float getPriceMultiplier(final MerchantRecipe recipe) {
         float p = 0.05f;
         final Material type = recipe.getResult().getType();
@@ -159,6 +183,7 @@ public class PlayerListener implements Listener {
         return p;
     }
 
+    //Returns the configured settings for a trade
     private ConfigurationSection getItem(final MerchantRecipe recipe, final String k) {
         final ConfigurationSection item = instance.getCfg().getConfigurationSection("Overrides."+k);
         if(item == null) return null;
@@ -176,6 +201,7 @@ public class PlayerListener implements Listener {
             if(recipe.getResult().getType() != Material.ENCHANTED_BOOK) return null;
             final EnchantmentStorageMeta meta = (EnchantmentStorageMeta)recipe.getResult().getItemMeta();
             final Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(k.substring(0, k.lastIndexOf("_"))));
+            if(meta == null || enchantment == null) return null;
             if(meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
             return null;
         } catch(NumberFormatException e) {

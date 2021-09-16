@@ -1,5 +1,6 @@
 package com.pretzel.dev.villagertradelimiter.lib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,8 +33,8 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         final Player player = (sender instanceof Player ? (Player)sender : null);
         if(player != null && !player.hasPermission(this.permission) && !this.permission.isEmpty()) return false;
 
-        if(args.length == 0) {
-            this.callback.call(player);
+        if(args.length == 0 || (args.length == 1 && subs.size() == 0)) {
+            this.callback.call(player, args);
             return true;
         }
 
@@ -54,6 +55,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         final List<String> list = new ArrayList<>();
         if(args.length == 0) return null;
         if(args.length == 1) {
+            if(subs.size() == 0) return getPlayerList();
             for(CommandBase cmd : subs)
                 if(player.hasPermission(cmd.getPermission()))
                     list.add(cmd.getName());
@@ -71,6 +73,13 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         String[] res = new String[args.length-1];
         System.arraycopy(args, 1, res, 0, res.length);
         return res;
+    }
+
+    private static List<String> getPlayerList() {
+        final List<String> players = new ArrayList<>();
+        for(Player p : Bukkit.getOnlinePlayers())
+            players.add(p.getName());
+        return players;
     }
 
     public String getName() { return this.name; }

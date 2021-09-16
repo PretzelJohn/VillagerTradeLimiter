@@ -63,7 +63,13 @@
             </tr>
             <tr>
                 <td><code>DisableTrading:</code></td>
-                <td>Set this to true if you want to completely disable ALL villager trading.</td>
+                <td>Whether to disable all villager trading for all worlds, some worlds, or no worlds. Options:
+                    <ul>
+                        <li>Add world names for worlds that you want to completely disable ALL villager trading.</li>
+                        <li>Set to true to disable trading in all worlds.</li>
+                        <li>Set to false or [] to disable this feature.</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <td><code>MaxHeroLevel:</code></td>
@@ -107,12 +113,16 @@
                 <td>Override the global settings by adding as many of these as you need. Enchanted books must follow the format of <code>name_level</code> (mending_1). All other items must follow the format of <code>item_name</code> (stone_bricks).</td>
             </tr>
             <tr>
+                <td><code>.Disabled:</code></td>
+                <td>Disables any trade that contains the item (true/false)</td>
+            </tr>
+            <tr>
                 <td><code>.MaxDiscount:</code></td>
-                <td>Sets the maximum discount for this item</td>
+                <td>Sets the maximum discount for this item (-1.0, or between 0.0 to 1.0)</td>
             </tr>
             <tr>
                 <td><code>.MaxDemand:</code></td>
-                <td>Sets the maximum demand for this item</td>
+                <td>Sets the maximum demand for this item (-1, or 0+)</td>
             </tr>
         </table>
     </li>

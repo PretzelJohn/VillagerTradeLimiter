@@ -29,7 +29,7 @@ public class ConfigUpdater {
     }
 
     public FileConfiguration updateConfig(File file, String prefix) {
-        final FileConfiguration cfg = (FileConfiguration)YamlConfiguration.loadConfiguration(file);
+        final FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         if(this.isUpdated()) return cfg;
         Util.consoleMsg(prefix+"Updating config.yml...");
 
@@ -49,14 +49,13 @@ public class ConfigUpdater {
                     }
                     out += line+"\n";
                     boolean found = false;
-                    for(int j = 0; j < cfgActive.length; j++) {
-                        String line2 = cfgActive[j];
-                        if(line2.startsWith("  ") && !line2.replace(" ", "").isEmpty()) {
-                            out += line2+"\n";
+                    for(String line2 : cfgActive) {
+                        if (line2.startsWith("  ") && !line2.replace(" ", "").isEmpty()) {
+                            out += line2 + "\n";
                             found = true;
                         }
                     }
-                    if(found == false) {
+                    if(!found) {
                         while(i < cfgDefault.length-1) {
                             i++;
                             String line2 = cfgDefault[i];
@@ -68,7 +67,7 @@ public class ConfigUpdater {
             }
         }
         Util.writeFile(file, out+"\n");
-        return (FileConfiguration)YamlConfiguration.loadConfiguration(file);
+        return YamlConfiguration.loadConfiguration(file);
     }
 
     public boolean isUpdated() {
