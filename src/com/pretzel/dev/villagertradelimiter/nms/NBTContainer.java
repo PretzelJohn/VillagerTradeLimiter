@@ -1,44 +1,82 @@
 package com.pretzel.dev.villagertradelimiter.nms;
 
-import com.pretzel.dev.villagertradelimiter.lib.Util;
-import org.bukkit.entity.Entity;
+import java.io.InputStream;
 
-public class NBTContainer {
-    private final NMS nms;
-    private final Entity entity;
-    private final NBTTagCompound tag;
+import com.pretzel.dev.villagertradelimiter.nms.utils.nmsmappings.ClassWrapper;
+import com.pretzel.dev.villagertradelimiter.nms.utils.nmsmappings.ObjectCreator;
+import com.pretzel.dev.villagertradelimiter.nms.utils.nmsmappings.ReflectionMethod;
 
-    public NBTContainer(final NMS nms, final Entity entity) {
-        this.nms = nms;
-        this.entity = entity;
-        this.tag = this.loadTag();
-    }
+/**
+ * A Standalone {@link NBTCompound} implementation. All data is just kept inside
+ * this Object.
+ * 
+ * @author tr7zw
+ *
+ */
+public class NBTContainer extends NBTCompound {
 
-    public NBTTagCompound loadTag() {
-        final CraftEntity craftEntity = new CraftEntity(nms);
-        final NMSEntity nmsEntity = new NMSEntity(nms);
-        final Class<?> tgc;
-        if(nms.getVersion().compareTo("v1_17_R1") < 0)
-            tgc = nms.getNMSClass("server."+nms.getVersion()+".NBTTagCompound");
-        else
-            tgc = nms.getNMSClass("nbt.NBTTagCompound");
-        try {
-            final NBTTagCompound tag = new NBTTagCompound(nms, tgc.getDeclaredConstructor().newInstance());
-            nmsEntity.save(craftEntity.getHandle(this.entity), tag);
-            return tag;
-        } catch (Exception e) {
-            Util.errorMsg(e);
-            return null;
-        }
-    }
+	private Object nbt;
 
-    public void saveTag(final Entity entity, final NBTTagCompound tag) {
-        final CraftEntity craftEntity = new CraftEntity(nms);
-        final NMSEntity nmsEntity = new NMSEntity(nms);
-        nmsEntity.load(craftEntity.getHandle(entity), tag);
-    }
+	/**
+	 * Creates an empty, standalone NBTCompound
+	 */
+	public NBTContainer() {
+		super(null, null);
+		nbt = ObjectCreator.NMS_NBTTAGCOMPOUND.getInstance();
+	}
 
-    public NBTTagCompound getTag() {
-        return this.tag;
-    }
+	/**
+	 * Takes in any NMS Compound to wrap it
+	 * 
+	 * @param nbt
+	 */
+	public NBTContainer(Object nbt) {
+		super(null, null);
+		if (nbt == null) {
+			throw new NullPointerException("The NBT-Object can't be null!");
+		}
+		if (!ClassWrapper.NMS_NBTTAGCOMPOUND.getClazz().isAssignableFrom(nbt.getClass())) {
+			throw new NbtApiException("The object '" + nbt.getClass() + "' is not a valid NBT-Object!");
+		}
+		this.nbt = nbt;
+	}
+
+	/**
+	 * Reads in a NBT InputStream
+	 * 
+	 * @param inputsteam
+	 */
+	public NBTContainer(InputStream inputsteam) {
+		super(null, null);
+		this.nbt = NBTReflectionUtil.readNBT(inputsteam);
+	}
+
+	/**
+	 * Parses in a NBT String to a standalone {@link NBTCompound}. Can throw a
+	 * {@link NbtApiException} in case something goes wrong.
+	 * 
+	 * @param nbtString
+	 */
+	public NBTContainer(String nbtString) {
+		super(null, null);
+		if (nbtString == null) {
+			throw new NullPointerException("The String can't be null!");
+		}
+		try {
+			nbt = ReflectionMethod.PARSE_NBT.run(null, nbtString);
+		} catch (Exception ex) {
+			throw new NbtApiException("Unable to parse Malformed Json!", ex);
+		}
+	}
+
+	@Override
+	public Object getCompound() {
+		return nbt;
+	}
+
+	@Override
+	public void setCompound(Object tag) {
+		nbt = tag;
+	}
+
 }
