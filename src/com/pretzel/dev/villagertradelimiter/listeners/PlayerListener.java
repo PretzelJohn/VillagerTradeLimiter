@@ -3,7 +3,6 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.nms.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -26,11 +24,9 @@ public class PlayerListener implements Listener {
     private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_AXE, Material.NETHERITE_HOE, Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL, Material.NETHERITE_SWORD, Material.NETHERITE_HELMET, Material.NETHERITE_CHESTPLATE, Material.NETHERITE_LEGGINGS, Material.NETHERITE_BOOTS };
 
     private final VillagerTradeLimiter instance;
-    private final NMS nms;
 
     public PlayerListener(VillagerTradeLimiter instance) {
         this.instance = instance;
-        this.nms = new NMS(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
     }
 
     @EventHandler
@@ -60,8 +56,69 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         if(Util.isNPC(player)) return; //Skips NPCs
         this.hotv(player);
+        this.setIngredients(villager);
+        this.setData(villager);
         this.maxDiscount(villager, player);
         this.maxDemand(villager);
+    }
+
+    private void setIngredients(final Villager villager) {
+        final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
+        final NBTEntity villagerNBT = new NBTEntity(villager);
+        NBTCompoundList recipes = villagerNBT.getCompound("Offers").getCompoundList("Recipes");
+        for (NBTCompound recipe : recipes) {
+            if(overrides != null) {
+                for(final String override : overrides.getKeys(false)) {
+                    final ConfigurationSection item = this.getItem(recipe, override);
+                    if(item != null) {
+                        if (item.contains("item-1-material"))
+                            recipe.getCompound("buy").setString("id", "minecraft:" + item.getString("item-1-material"));
+                        if (item.contains("item-2-material"))
+                            recipe.getCompound("buyB").setString("id", "minecraft:" + item.getString("item-2-material"));
+
+                        if (recipe.getCompound("buy").getString("id") != "minecraft:air" && item.contains("item-1-amount")) {
+                            int cost = item.getInt("item-1-amount");
+                            if (cost <= 0)
+                                cost = 1;
+                            else if (cost > 64)
+                                cost = 64;
+                            recipe.getCompound("buy").setInteger("Count", cost);
+                        }
+
+                        if (recipe.getCompound("buyB").getString("id") != "minecraft:air" && item.contains("item-2-amount")) {
+                            int cost2 = item.getInt("item-2-amount");
+                            if (cost2 <= 0)
+                                cost2 = 1;
+                            else if (cost2 > 64)
+                                cost2 = 64;
+                            recipe.getCompound("buyB").setInteger("Count", cost2);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void setData(final Villager villager) {
+        final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
+        final NBTEntity villagerNBT = new NBTEntity(villager);
+        NBTCompoundList recipes = villagerNBT.getCompound("Offers").getCompoundList("Recipes");
+        for (NBTCompound recipe : recipes) {
+            if(overrides != null) {
+                for(final String override : overrides.getKeys(false)) {
+                    final ConfigurationSection item = this.getItem(recipe, override);
+                    if(item != null) {
+                        if (item.contains("uses")) {
+                            int uses = item.getInt("uses");
+                            if (uses > 0)
+                                recipe.setInteger("maxUses", uses);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     //Hero of the Village effect limiter feature
@@ -82,43 +139,44 @@ public class PlayerListener implements Listener {
 
     //MaxDiscount feature - limits the lowest discounted price to a % of the base price
     private void maxDiscount(final Villager villager, final Player player) {
-        final List<MerchantRecipe> recipes = villager.getRecipes();
-        int a = 0, b = 0, c = 0, d = 0, e = 0;
+        int majorPositiveValue = 0, minorPositiveValue = 0, tradingValue = 0, minorNegativeValue = 0, majorNegativeValue = 0;
 
-        final NBTContainer vnbt = new NBTContainer(this.nms, villager);
-        final NBTTagList gossips = new NBTTagList(this.nms, vnbt.getTag().get("Gossips"));
-        final NBTContainer pnbt = new NBTContainer(this.nms, player);
-        final String puuid = Util.intArrayToString(pnbt.getTag().getIntArray("UUID"));
-
-        for (int i = 0; i < gossips.size(); ++i) {
-            final NBTTagCompound gossip = gossips.getCompound(i);
-            final String type = gossip.getString("Type");
-            final String tuuid = Util.intArrayToString(gossip.getIntArray("Target"));
-            final int value = gossip.getInt("Value");
-            if (tuuid.equals(puuid)) {
-                switch(type) {
-                    case "trading": c = value; break;
-                    case "minor_positive": b = value; break;
-                    case "minor_negative": d = value; break;
-                    case "major_positive": a = value; break;
-                    case "major_negative": e = value; break;
-                    default: break;
+        NBTEntity nbtEntity = new NBTEntity(villager);
+        final NBTEntity playerNBT = new NBTEntity(player);
+        final String playerUUID = Util.intArrayToString(playerNBT.getIntArray("UUID"));
+        if (nbtEntity.hasKey("Gossips")) {
+            NBTCompoundList gossips = nbtEntity.getCompoundList("Gossips");
+            for (NBTCompound gossip : gossips) {
+                final String type = gossip.getString("Type");
+                final String targetUUID = Util.intArrayToString(gossip.getIntArray("Target"));
+                final int value = gossip.getInteger("Value");
+                if (targetUUID == playerUUID) {
+                    switch (type) {
+                        case "trading": tradingValue = value; break;
+                        case "minor_positive": minorPositiveValue = value; break;
+                        case "minor_negative": minorNegativeValue = value; break;
+                        case "major_positive": majorPositiveValue = value; break;
+                        case "major_negative": majorNegativeValue = value; break;
+                        default: break;
+                    }
                 }
             }
         }
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
 
-        final ArrayList<MerchantRecipe> finalRecipes = new ArrayList<>();
-        for (final MerchantRecipe recipe : recipes) {
-            final int x = recipe.getIngredients().get(0).getAmount();
-            final float p0 = this.getPriceMultiplier(recipe);
-            final int w = 5 * a + b + c - d - 5 * e;
-            final float y = x - p0 * w;
+        final NBTEntity villagerNBT = new NBTEntity(villager);
+        NBTCompoundList recipes = villagerNBT.getCompound("Offers").getCompoundList("Recipes");
+        List<NBTCompound> remove = new ArrayList<>();
+        for (NBTCompound recipe : recipes) {
+            final int ingredientAmount = recipe.getCompound("buy").getInteger("Count");
+            final float priceMultiplier = this.getPriceMultiplier(recipe);
+            final int valueModifier = 5 * majorPositiveValue + minorPositiveValue + tradingValue - minorNegativeValue - 5 * majorNegativeValue;
+            final float finalValue = ingredientAmount - priceMultiplier * valueModifier;
             boolean disabled = false;
             double maxDiscount = instance.getCfg().getDouble("MaxDiscount", 0.3);
             if(overrides != null) {
-                for(final String k : overrides.getKeys(false)) {
-                    final ConfigurationSection item = this.getItem(recipe, k);
+                for(final String override : overrides.getKeys(false)) {
+                    final ConfigurationSection item = this.getItem(recipe, override);
                     if(item != null) {
                         disabled = item.getBoolean("Disabled", false);
                         maxDiscount = item.getDouble("MaxDiscount", maxDiscount);
@@ -127,53 +185,49 @@ public class PlayerListener implements Listener {
                 }
             }
             if(maxDiscount >= 0.0 && maxDiscount <= 1.0) {
-                if(y < x * (1.0 - maxDiscount) && y != x) {
-                    recipe.setPriceMultiplier(x * (float)maxDiscount / w);
+                if(finalValue < ingredientAmount * (1.0 - maxDiscount) && finalValue != ingredientAmount) {
+                    recipe.setFloat("priceMultiplier", ingredientAmount * (float)maxDiscount / valueModifier);
                 } else {
-                    recipe.setPriceMultiplier(p0);
+                    recipe.setFloat("priceMultiplier", priceMultiplier);
                 }
             } else {
-                recipe.setPriceMultiplier(p0);
+                recipe.setFloat("priceMultiplier", priceMultiplier);
             }
-            if(!disabled) finalRecipes.add(recipe);
+            if(disabled)
+                remove.add(recipe);
         }
-        villager.setRecipes(finalRecipes);
-        Bukkit.getScheduler().runTaskLater(instance, () -> villager.setRecipes(recipes), 0);
+        remove.forEach(rem -> { recipes.remove(rem); });
     }
 
     //MaxDemand feature - limits demand-based price increases
     private void maxDemand(final Villager villager) {
-        List<MerchantRecipe> recipes = villager.getRecipes();
-        final NBTContainer vnbt = new NBTContainer(this.nms, villager);
-        final NBTTagCompound vtag = vnbt.getTag();
-        final NBTTagList recipes2 = new NBTTagList(this.nms, vtag.getCompound("Offers").get("Recipes"));
-
+        final NBTEntity villagerNBT = new NBTEntity(villager);
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
-        for(int i = 0; i < recipes2.size(); ++i) {
-            final NBTTagCompound recipe2 = recipes2.getCompound(i);
-            final int demand = recipe2.getInt("demand");
-            int maxDemand = instance.getCfg().getInt("MaxDemand", -1);
-            if(overrides != null) {
-                for(final String k : overrides.getKeys(false)) {
-                    final ConfigurationSection item = this.getItem(recipes.get(i), k);
-                    if(item != null) {
-                        maxDemand = item.getInt("MaxDemand", maxDemand);
-                        break;
+        if (villagerNBT.hasKey("Offers")) {
+            NBTCompoundList recipes = villagerNBT.getCompound("Offers").getCompoundList("Recipes");
+            for (NBTCompound recipe : recipes) {
+                final int demand = recipe.getInteger("demand");
+                int maxDemand = instance.getCfg().getInt("MaxDemand", -1);
+                if (overrides != null) {
+                    for (String override : overrides.getKeys(false)) {
+                        final ConfigurationSection item = this.getItem(recipe, override);
+                        if(item != null) {
+                            maxDemand = item.getInt("MaxDemand", maxDemand);
+                            break;
+                        }
                     }
                 }
-            }
-            if(maxDemand >= 0 && demand > maxDemand) {
-                recipe2.setInt("demand", maxDemand);
+                if(maxDemand >= 0 && demand > maxDemand) {
+                    recipe.setInteger("demand", maxDemand);
+                }
             }
         }
-        villager.getInventory().clear();
-        vnbt.saveTag(villager, vtag);
     }
 
     //Returns the price multiplier for a given trade
-    private float getPriceMultiplier(final MerchantRecipe recipe) {
+    private float getPriceMultiplier(final NBTCompound recipe) {
         float p = 0.05f;
-        final Material type = recipe.getResult().getType();
+        final Material type = recipe.getItemStack("sell").getType();
         for(int length = MATERIALS.length, i = 0; i < length; ++i) {
             if(type == MATERIALS[i]) {
                 p = 0.2f;
@@ -184,7 +238,7 @@ public class PlayerListener implements Listener {
     }
 
     //Returns the configured settings for a trade
-    private ConfigurationSection getItem(final MerchantRecipe recipe, final String k) {
+    private ConfigurationSection getItem(final NBTCompound recipe, final String k) {
         final ConfigurationSection item = instance.getCfg().getConfigurationSection("Overrides."+k);
         if(item == null) return null;
 
@@ -198,25 +252,26 @@ public class PlayerListener implements Listener {
         try {
             //Return the enchanted book item if there's a number in the item name
             final int level = Integer.parseInt(words[words.length-1]);
-            if(recipe.getResult().getType() != Material.ENCHANTED_BOOK) return null;
-            final EnchantmentStorageMeta meta = (EnchantmentStorageMeta)recipe.getResult().getItemMeta();
-            final Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(k.substring(0, k.lastIndexOf("_"))));
-            if(meta == null || enchantment == null) return null;
-            if(meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
-            return null;
+            if(recipe.getItemStack("sell").getType() == Material.ENCHANTED_BOOK) {
+                final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) recipe.getItemStack("sell").getItemMeta();
+                final Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(k.substring(0, k.lastIndexOf("_"))));
+                if (meta == null || enchantment == null) return null;
+                if (meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
+            }
         } catch(NumberFormatException e) {
             //Return the item if the item name is valid
-            if(this.verify(recipe, Material.matchMaterial(k))) return item;
+            if(this.verify(recipe, Material.matchMaterial(k)))
+                return item;
             return null;
         } catch(Exception e2) {
             //Send an error message
             Util.errorMsg(e2);
-            return null;
         }
+        return null;
     }
 
     //Verifies that an item exists in the villager's trade
-    private boolean verify(final MerchantRecipe recipe, final Material material) {
-        return ((recipe.getResult().getType() == material) || (recipe.getIngredients().get(0).getType() == material));
+    private boolean verify(final NBTCompound recipe, final Material material) {
+        return ((recipe.getItemStack("sell").getType() == material) || (recipe.getItemStack("buy").getType() == material));
     }
 }
