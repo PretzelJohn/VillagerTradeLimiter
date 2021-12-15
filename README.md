@@ -124,6 +124,18 @@
                 <td><code>.MaxDemand:</code></td>
                 <td>Sets the maximum demand for this item (-1, or 0+)</td>
             </tr>
+            <tr>
+                <td><code>.MaxUses:</code></td>
+                <td>Sets the maximum number of times a player can make the trade before the villager is out of stock</td>
+            </tr>
+            <tr>
+                <td><code>.Item1.Material:</code><br><code>.Item2.Material:</code></td>
+                <td>Sets the material of the 1st or 2nd item in the trade</td>
+            </tr>
+            <tr>
+                <td><code>.Item1.Amount:</code><br><code>.Item2.Amount:</code></td>
+                <td>Sets the amount of the 1st or 2nd item in the trade</td>
+            </tr>
         </table>
     </li>
     <li>

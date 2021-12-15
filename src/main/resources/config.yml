@@ -1,6 +1,6 @@
 #---------------------------------------------------------------------------------#
 #                          VTL ~ VillagerTradeLimiter                             #
-#                                Version: 1.3.0                                   #
+#                                Version: 1.4.0                                   #
 #                                By: PretzelJohn                                  #
 #---------------------------------------------------------------------------------#
 
@@ -11,8 +11,8 @@ bStats: true
 
 # Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
 DisableTrading:
-  - world_nether
-  - world_the_end
+- world_nether
+- world_the_end
 
 # The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases.
 #   * Set to -1 to disable this feature and keep vanilla behavior.
@@ -46,6 +46,13 @@ Overrides:
   name_tag:
     MaxDiscount: -1.0
     MaxDemand: 60
+    Item1:
+      Material: "paper"
+      Amount: 64
+    Item2:
+      Material: "ink_sac"
+      Amount: 32
+    MaxUses: 64
   clock:
     MaxDemand: 12
   paper:

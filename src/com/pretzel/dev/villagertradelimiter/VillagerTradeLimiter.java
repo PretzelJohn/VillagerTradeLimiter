@@ -7,10 +7,13 @@ import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.listeners.PlayerListener;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 
 public class VillagerTradeLimiter extends JavaPlugin {
     public static final String PLUGIN_NAME = "VillagerTradeLimiter";
@@ -43,8 +46,12 @@ public class VillagerTradeLimiter extends JavaPlugin {
         //Load config.yml
         final String mainPath = this.getDataFolder().getPath()+"/";
         final File file = new File(mainPath, "config.yml");
-        ConfigUpdater updater = new ConfigUpdater(this.getTextResource("config.yml"), file);
-        this.cfg = updater.updateConfig(file, PREFIX);
+        try {
+            ConfigUpdater.update(this, "config.yml", file, Collections.singletonList("Overrides"));
+        } catch (IOException e) {
+            Util.errorMsg(e);
+        }
+        this.cfg = YamlConfiguration.loadConfiguration(file);
     }
 
     private void loadBStats() {

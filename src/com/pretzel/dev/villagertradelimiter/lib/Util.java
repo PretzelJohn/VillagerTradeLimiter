@@ -2,21 +2,14 @@ package com.pretzel.dev.villagertradelimiter.lib;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Reader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -101,51 +94,5 @@ public class Util {
         } catch(Exception e) {
             errorMsg(e);
         }
-    }
-
-    public static final String stacksToBase64(final ItemStack[] contents) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-
-            dataOutput.writeInt(contents.length);
-            for (ItemStack stack : contents) dataOutput.writeObject(stack);
-            dataOutput.close();
-            return Base64Coder.encodeLines(outputStream.toByteArray()).replace("\n", "").replace("\r", "");
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to save item stacks.", e);
-        }
-    }
-
-    public static final ItemStack[] stacksFromBase64(final String data) {
-        if (data == null || Base64Coder.decodeLines(data).equals(null))
-            return new ItemStack[]{};
-
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-        BukkitObjectInputStream dataInput = null;
-        ItemStack[] stacks = null;
-
-        try {
-            dataInput = new BukkitObjectInputStream(inputStream);
-            stacks = new ItemStack[dataInput.readInt()];
-        } catch (IOException e) {
-            Util.errorMsg(e);
-        }
-
-        for (int i = 0; i < stacks.length; i++) {
-            try {
-                stacks[i] = (ItemStack) dataInput.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                try { dataInput.close(); }
-                catch (IOException ignored) {}
-                Util.errorMsg(e);
-                return null;
-            }
-        }
-
-        try { dataInput.close(); }
-        catch (IOException ignored) {}
-
-        return stacks;
     }
 }
