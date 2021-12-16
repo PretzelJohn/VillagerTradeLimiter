@@ -3,7 +3,6 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.nms.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,24 +13,22 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlayerListener implements Listener {
-    private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_AXE, Material.NETHERITE_HOE, Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL, Material.NETHERITE_SWORD, Material.NETHERITE_HELMET, Material.NETHERITE_CHESTPLATE, Material.NETHERITE_LEGGINGS, Material.NETHERITE_BOOTS };
+    private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.DIAMOND_SWORD};
+    private static final Material[] MAX_USES_16 = new Material[]{Material.COAL, Material.CHICKEN, Material.PORKCHOP, Material.RABBIT, Material.MUTTON, Material.BEEF, Material.COOKED_CHICKEN, Material.COOKED_PORKCHOP, Material.PAPER, Material.GLASS_PANE, Material.ROTTEN_FLESH, Material.WHEAT, Material.POTATO, Material.CARROT, Material.BEETROOT, Material.BREAD, Material.APPLE, Material.STRING, Material.COOKED_COD, Material.COD_BUCKET, Material.COD, Material.COOKED_SALMON, Material.SALMON, Material.STICK, Material.FEATHER, Material.LEATHER, Material.CLAY_BALL, Material.BRICK, Material.STONE, Material.CHISELED_STONE_BRICKS, Material.GRANITE, Material.ANDESITE, Material.DIORITE, Material.POLISHED_ANDESITE, Material.POLISHED_GRANITE, Material.POLISHED_DIORITE, Material.DRIPSTONE_BLOCK, Material.WHITE_WOOL, Material.LIGHT_GRAY_WOOL, Material.GRAY_WOOL, Material.BLACK_WOOL, Material.BROWN_WOOL, Material.ORANGE_WOOL, Material.YELLOW_WOOL, Material.LIME_WOOL, Material.GREEN_WOOL, Material.CYAN_WOOL, Material.BLUE_WOOL, Material.LIGHT_BLUE_WOOL, Material.PURPLE_WOOL, Material.MAGENTA_WOOL, Material.PINK_WOOL, Material.RED_WOOL, Material.WHITE_CARPET, Material.LIGHT_GRAY_CARPET, Material.GRAY_CARPET, Material.BLACK_CARPET, Material.BROWN_CARPET, Material.ORANGE_CARPET, Material.YELLOW_CARPET, Material.LIME_CARPET, Material.GREEN_CARPET, Material.CYAN_CARPET, Material.BLUE_CARPET, Material.LIGHT_BLUE_CARPET, Material.PURPLE_CARPET, Material.MAGENTA_CARPET, Material.PINK_CARPET, Material.RED_CARPET, Material.WHITE_DYE, Material.LIGHT_GRAY_DYE, Material.GRAY_DYE, Material.BLACK_DYE, Material.BROWN_DYE, Material.ORANGE_DYE, Material.YELLOW_DYE, Material.LIME_DYE, Material.GREEN_DYE, Material.CYAN_DYE, Material.BLUE_DYE, Material.LIGHT_BLUE_DYE, Material.PURPLE_DYE, Material.MAGENTA_DYE, Material.PINK_DYE, Material.RED_DYE};
+    private static final Material[] MAX_USES_3 = new Material[]{Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.DIAMOND_SWORD, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.FISHING_ROD, Material.BOW, Material.CROSSBOW};
 
     private final VillagerTradeLimiter instance;
-    private final HashMap<Villager, List<MerchantRecipe>> originalRecipes;
 
     public PlayerListener(VillagerTradeLimiter instance) {
         this.instance = instance;
-        this.originalRecipes = new HashMap<>();
     }
 
     //Handles villager trading event
@@ -123,26 +120,21 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if(!originalRecipes.containsKey(villager)) {
-            originalRecipes.put(villager, villager.getRecipes());
-        }
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
         final NBTEntity villagerNBT = new NBTEntity(villager);
         NBTCompoundList recipes = villagerNBT.getCompound("Offers").getCompoundList("Recipes");
-        List<NBTCompound> remove = new ArrayList<>();
-        for (NBTCompound recipe : recipes) {
+        for(final NBTCompound recipe : recipes) {
             final int ingredientAmount = recipe.getCompound("buy").getInteger("Count");
             final float priceMultiplier = this.getPriceMultiplier(recipe);
             final int valueModifier = 5 * majorPositiveValue + minorPositiveValue + tradingValue - minorNegativeValue - 5 * majorNegativeValue;
             final float finalValue = ingredientAmount - priceMultiplier * valueModifier;
-            boolean disabled = false;
             double maxDiscount = instance.getCfg().getDouble("MaxDiscount", 0.3);
-            if(overrides != null) {
-                for(final String override : overrides.getKeys(false)) {
+            if (overrides != null) {
+                for (final String override : overrides.getKeys(false)) {
                     final ConfigurationSection item = this.getItem(recipe, override);
-                    if(item != null) {
+                    if (item != null) {
                         //Set whether trade is disabled and max discount
-                        disabled = item.getBoolean("Disabled", false);
+                        boolean disabled = item.getBoolean("Disabled", false);
                         maxDiscount = item.getDouble("MaxDiscount", maxDiscount);
 
                         //Set 1st and 2nd ingredients
@@ -150,27 +142,37 @@ public class PlayerListener implements Listener {
                         setIngredient(item, recipe, "buyB", "Item2");
 
                         //Set max uses
-                        if(item.contains("MaxUses")) {
+                        if (item.contains("MaxUses")) {
                             int uses = item.getInt("MaxUses");
-                            if(uses > 0) recipe.setInteger("maxUses", uses);
+                            if (uses > 0) recipe.setInteger("maxUses", uses);
+                        } else {
+                            if (disabled) recipe.setInteger("maxUses", 0);
+                            else {
+                                int uses = 12;
+                                Material buyMaterial = recipe.getItemStack("buy").getType();
+                                Material sellMaterial = recipe.getItemStack("sell").getType();
+                                if (Arrays.asList(MAX_USES_16).contains(buyMaterial) || Arrays.asList(MAX_USES_16).contains(sellMaterial)) {
+                                    uses = 16;
+                                } else if (Arrays.asList(MAX_USES_3).contains(buyMaterial) || Arrays.asList(MAX_USES_3).contains(sellMaterial)) {
+                                    uses = 3;
+                                }
+                                recipe.setInteger("maxUses", uses);
+                            }
                         }
                         break;
                     }
                 }
             }
-            if(maxDiscount >= 0.0 && maxDiscount <= 1.0) {
-                if(finalValue < ingredientAmount * (1.0 - maxDiscount) && finalValue != ingredientAmount) {
-                    recipe.setFloat("priceMultiplier", ingredientAmount * (float)maxDiscount / valueModifier);
+            if (maxDiscount >= 0.0 && maxDiscount <= 1.0) {
+                if (finalValue < ingredientAmount * (1.0 - maxDiscount) && finalValue != ingredientAmount) {
+                    recipe.setFloat("priceMultiplier", ingredientAmount * (float) maxDiscount / valueModifier);
                 } else {
                     recipe.setFloat("priceMultiplier", priceMultiplier);
                 }
             } else {
                 recipe.setFloat("priceMultiplier", priceMultiplier);
             }
-            if(disabled) remove.add(recipe);
         }
-        remove.forEach(recipes::remove);
-        Bukkit.getScheduler().runTaskLater(instance, () -> villager.setRecipes(originalRecipes.get(villager)), 1);
     }
 
     //MaxDemand feature - limits demand-based price increases
