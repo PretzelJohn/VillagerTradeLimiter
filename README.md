@@ -63,7 +63,7 @@
             </tr>
             <tr>
                 <td><code>DisableTrading:</code></td>
-                <td>Whether to disable all villager trading for all worlds, some worlds, or no worlds. Options:
+                <td>Whether to disable all villager trading for all worlds, some worlds, or no worlds.<br/><strong>Options:</strong>
                     <ul>
                         <li>Add world names for worlds that you want to completely disable ALL villager trading.</li>
                         <li>Set to true to disable trading in all worlds.</li>
@@ -73,7 +73,7 @@
             </tr>
             <tr>
                 <td><code>MaxHeroLevel:</code></td>
-                <td>The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases. Options:
+                <td>The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases.<br/><strong>Options:</strong>
                     <ul>
                         <li>Set to -1 to disable this feature and keep vanilla behavior</li>
                         <li>Set to a number between 0 and 5 to set the maximum HotV effect level players can have</li>
@@ -82,7 +82,7 @@
             </tr>
             <tr>
                 <td><code>MaxDiscount:</code></td>
-                <td>The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases. Options:
+                <td>The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases.<br/><strong>Options:</strong>
                     <ul>
                         <li>Set to -1.0 to disable this feature and keep vanilla behavior</li>
                         <li>Set to a number between 0.0 and 1.0 to set the maximum discount a player can get. (NOTE: 30% = 0.3)</li>
@@ -91,12 +91,21 @@
             </tr>
             <tr>
                 <td><code>MaxDemand:</code></td>
-                <td>The maximum demand for all items. This limits demand-based price increases. Options:
+                <td>The maximum demand for all items. This limits demand-based price increases.<br/><strong>Options:</strong>
                     <ul>
                         <li>Set to -1 to disable this feature and keep vanilla behavior</li>
                         <li>Set to 0 or higher to set the maximum demand for all items</li>
                     </ul><br>
-                    WARNING: The previous demand information cannot be recovered if it was higher than the MaxDemand.
+                    <strong>WARNING:</strong> The previous demand information cannot be recovered if it was higher than the MaxDemand.
+                </td>
+            </tr>
+            <tr>
+                <td><code>MaxUses:</code></td>
+                <td>The maximum number of times a player can make any trade before a villager is out of stock.<br/><strong>Options:</strong>
+                    <ul>
+                        <li>Set to -1 to disable this feature and keep vanilla behavior</li>
+                        <li>Set to 0 or higher to change the maximum number of uses for all items</li>
+                    </ul>
                 </td>
             </tr>
         </table>

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class PlayerListener implements Listener {
     private static final Material[] MATERIALS = new Material[] { Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.SHIELD, Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.FILLED_MAP, Material.FISHING_ROD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.ENCHANTED_BOOK, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.DIAMOND_SWORD};
-    private static final Material[] MAX_USES_16 = new Material[]{Material.COAL, Material.CHICKEN, Material.PORKCHOP, Material.RABBIT, Material.MUTTON, Material.BEEF, Material.COOKED_CHICKEN, Material.COOKED_PORKCHOP, Material.PAPER, Material.GLASS_PANE, Material.ROTTEN_FLESH, Material.WHEAT, Material.POTATO, Material.CARROT, Material.BEETROOT, Material.BREAD, Material.APPLE, Material.STRING, Material.COOKED_COD, Material.COD_BUCKET, Material.COD, Material.COOKED_SALMON, Material.SALMON, Material.STICK, Material.FEATHER, Material.LEATHER, Material.CLAY_BALL, Material.BRICK, Material.STONE, Material.CHISELED_STONE_BRICKS, Material.GRANITE, Material.ANDESITE, Material.DIORITE, Material.POLISHED_ANDESITE, Material.POLISHED_GRANITE, Material.POLISHED_DIORITE, Material.DRIPSTONE_BLOCK, Material.WHITE_WOOL, Material.LIGHT_GRAY_WOOL, Material.GRAY_WOOL, Material.BLACK_WOOL, Material.BROWN_WOOL, Material.ORANGE_WOOL, Material.YELLOW_WOOL, Material.LIME_WOOL, Material.GREEN_WOOL, Material.CYAN_WOOL, Material.BLUE_WOOL, Material.LIGHT_BLUE_WOOL, Material.PURPLE_WOOL, Material.MAGENTA_WOOL, Material.PINK_WOOL, Material.RED_WOOL, Material.WHITE_CARPET, Material.LIGHT_GRAY_CARPET, Material.GRAY_CARPET, Material.BLACK_CARPET, Material.BROWN_CARPET, Material.ORANGE_CARPET, Material.YELLOW_CARPET, Material.LIME_CARPET, Material.GREEN_CARPET, Material.CYAN_CARPET, Material.BLUE_CARPET, Material.LIGHT_BLUE_CARPET, Material.PURPLE_CARPET, Material.MAGENTA_CARPET, Material.PINK_CARPET, Material.RED_CARPET, Material.WHITE_DYE, Material.LIGHT_GRAY_DYE, Material.GRAY_DYE, Material.BLACK_DYE, Material.BROWN_DYE, Material.ORANGE_DYE, Material.YELLOW_DYE, Material.LIME_DYE, Material.GREEN_DYE, Material.CYAN_DYE, Material.BLUE_DYE, Material.LIGHT_BLUE_DYE, Material.PURPLE_DYE, Material.MAGENTA_DYE, Material.PINK_DYE, Material.RED_DYE};
+    private static final Material[] MAX_USES_12 = new Material[]{Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.IRON_INGOT, Material.BELL, Material.CHAINMAIL_HELMET, Material.CHAINMAIL_CHESTPLATE, Material.CHAINMAIL_LEGGINGS, Material.CHAINMAIL_BOOTS, Material.LAVA_BUCKET, Material.DIAMOND, Material.SHIELD, Material.RABBIT_STEW, Material.DRIED_KELP_BLOCK, Material.SWEET_BERRIES, Material.MAP, Material.FILLED_MAP, Material.COMPASS, Material.ITEM_FRAME, Material.GLOBE_BANNER_PATTERN, Material.WHITE_BANNER, Material.LIGHT_GRAY_BANNER, Material.GRAY_BANNER, Material.BLACK_BANNER, Material.BROWN_BANNER, Material.ORANGE_BANNER, Material.YELLOW_BANNER, Material.LIME_BANNER, Material.GREEN_BANNER, Material.CYAN_BANNER, Material.BLUE_BANNER, Material.LIGHT_BLUE_BANNER, Material.PURPLE_BANNER, Material.MAGENTA_BANNER, Material.PINK_BANNER, Material.RED_BANNER, Material.WHITE_BED, Material.LIGHT_GRAY_BED, Material.GRAY_BED, Material.BLACK_BED, Material.BROWN_BED, Material.ORANGE_BED, Material.YELLOW_BED, Material.LIME_BED, Material.GREEN_BED, Material.CYAN_BED, Material.BLUE_BED, Material.LIGHT_BLUE_BED, Material.PURPLE_BED, Material.MAGENTA_BED, Material.PINK_BED, Material.RED_BED, Material.REDSTONE, Material.GOLD_INGOT, Material.LAPIS_LAZULI, Material.RABBIT_FOOT, Material.GLOWSTONE, Material.SCUTE, Material.GLASS_BOTTLE, Material.ENDER_PEARL, Material.NETHER_WART, Material.EXPERIENCE_BOTTLE, Material.PUMPKIN, Material.PUMPKIN_PIE, Material.MELON, Material.COOKIE, Material.CAKE, Material.SUSPICIOUS_STEW, Material.GOLDEN_CARROT, Material.GLISTERING_MELON_SLICE, Material.CAMPFIRE, Material.TROPICAL_FISH, Material.PUFFERFISH, Material.BIRCH_BOAT, Material.ACACIA_BOAT, Material.OAK_BOAT, Material.DARK_OAK_BOAT, Material.SPRUCE_BOAT, Material.JUNGLE_BOAT, Material.ARROW, Material.FLINT, Material.STRING, Material.TRIPWIRE_HOOK, Material.TIPPED_ARROW, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS, Material.LEATHER, Material.RABBIT_HIDE, Material.LEATHER_HORSE_ARMOR, Material.SADDLE, Material.BOOK, Material.ENCHANTED_BOOK, Material.BOOKSHELF, Material.INK_SAC, Material.GLASS, Material.WRITABLE_BOOK, Material.CLOCK, Material.NAME_TAG, Material.QUARTZ, Material.QUARTZ_PILLAR, Material.QUARTZ_BLOCK, Material.TERRACOTTA, Material.WHITE_TERRACOTTA, Material.LIGHT_GRAY_TERRACOTTA, Material.GRAY_TERRACOTTA, Material.BLACK_TERRACOTTA, Material.BROWN_TERRACOTTA, Material.ORANGE_TERRACOTTA, Material.YELLOW_TERRACOTTA, Material.LIME_TERRACOTTA, Material.GREEN_TERRACOTTA, Material.CYAN_TERRACOTTA, Material.BLUE_TERRACOTTA, Material.LIGHT_BLUE_TERRACOTTA, Material.PURPLE_TERRACOTTA, Material.MAGENTA_TERRACOTTA, Material.PINK_TERRACOTTA, Material.RED_TERRACOTTA, Material.WHITE_GLAZED_TERRACOTTA, Material.LIGHT_GRAY_GLAZED_TERRACOTTA, Material.GRAY_GLAZED_TERRACOTTA, Material.BLACK_GLAZED_TERRACOTTA, Material.BROWN_GLAZED_TERRACOTTA, Material.ORANGE_GLAZED_TERRACOTTA, Material.YELLOW_GLAZED_TERRACOTTA, Material.LIME_GLAZED_TERRACOTTA, Material.GREEN_GLAZED_TERRACOTTA, Material.CYAN_GLAZED_TERRACOTTA, Material.BLUE_GLAZED_TERRACOTTA, Material.LIGHT_BLUE_GLAZED_TERRACOTTA, Material.PURPLE_GLAZED_TERRACOTTA, Material.MAGENTA_GLAZED_TERRACOTTA, Material.PINK_GLAZED_TERRACOTTA, Material.RED_GLAZED_TERRACOTTA, Material.SHEARS, Material.PAINTING, Material.STONE_AXE, Material.STONE_SHOVEL, Material.STONE_PICKAXE, Material.STONE_HOE};
     private static final Material[] MAX_USES_3 = new Material[]{Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.DIAMOND_SWORD, Material.DIAMOND_AXE, Material.DIAMOND_SHOVEL, Material.DIAMOND_PICKAXE, Material.DIAMOND_HOE, Material.IRON_SWORD, Material.IRON_AXE, Material.IRON_SHOVEL, Material.IRON_PICKAXE, Material.FISHING_ROD, Material.BOW, Material.CROSSBOW};
 
     private final VillagerTradeLimiter instance;
@@ -128,41 +128,46 @@ public class PlayerListener implements Listener {
             final float priceMultiplier = this.getPriceMultiplier(recipe);
             final int valueModifier = 5 * majorPositiveValue + minorPositiveValue + tradingValue - minorNegativeValue - 5 * majorNegativeValue;
             final float finalValue = ingredientAmount - priceMultiplier * valueModifier;
+
+            boolean disabled = false;
             double maxDiscount = instance.getCfg().getDouble("MaxDiscount", 0.3);
+            int maxUses = instance.getCfg().getInt("MaxUses", -1);
             if (overrides != null) {
                 for (final String override : overrides.getKeys(false)) {
                     final ConfigurationSection item = this.getItem(recipe, override);
                     if (item != null) {
                         //Set whether trade is disabled and max discount
-                        boolean disabled = item.getBoolean("Disabled", false);
+                        disabled = item.getBoolean("Disabled", false);
                         maxDiscount = item.getDouble("MaxDiscount", maxDiscount);
+                        maxUses = item.getInt("MaxUses", maxUses);
 
                         //Set 1st and 2nd ingredients
                         setIngredient(item, recipe, "buy", "Item1");
                         setIngredient(item, recipe, "buyB", "Item2");
-
-                        //Set max uses
-                        if (item.contains("MaxUses")) {
-                            int uses = item.getInt("MaxUses");
-                            if (uses > 0) recipe.setInteger("maxUses", uses);
-                        } else {
-                            if (disabled) recipe.setInteger("maxUses", 0);
-                            else {
-                                int uses = 12;
-                                Material buyMaterial = recipe.getItemStack("buy").getType();
-                                Material sellMaterial = recipe.getItemStack("sell").getType();
-                                if (Arrays.asList(MAX_USES_16).contains(buyMaterial) || Arrays.asList(MAX_USES_16).contains(sellMaterial)) {
-                                    uses = 16;
-                                } else if (Arrays.asList(MAX_USES_3).contains(buyMaterial) || Arrays.asList(MAX_USES_3).contains(sellMaterial)) {
-                                    uses = 3;
-                                }
-                                recipe.setInteger("maxUses", uses);
-                            }
-                        }
                         break;
                     }
                 }
             }
+
+            //Set max uses
+            if(maxUses >= 0) {
+                recipe.setInteger("maxUses", maxUses);
+            } else {
+                if(disabled) recipe.setInteger("maxUses", 0);
+                else {
+                    int uses = 16;
+                    Material buyMaterial = recipe.getItemStack("buy").getType();
+                    Material sellMaterial = recipe.getItemStack("sell").getType();
+                    if (Arrays.asList(MAX_USES_12).contains(buyMaterial) || Arrays.asList(MAX_USES_12).contains(sellMaterial)) {
+                        uses = 12;
+                    } else if (Arrays.asList(MAX_USES_3).contains(buyMaterial) || Arrays.asList(MAX_USES_3).contains(sellMaterial)) {
+                        uses = 3;
+                    }
+                    recipe.setInteger("maxUses", uses);
+                }
+            }
+
+            //Set max discount
             if (maxDiscount >= 0.0 && maxDiscount <= 1.0) {
                 if (finalValue < ingredientAmount * (1.0 - maxDiscount) && finalValue != ingredientAmount) {
                     recipe.setFloat("priceMultiplier", ingredientAmount * (float) maxDiscount / valueModifier);

@@ -29,6 +29,12 @@ MaxDiscount: 0.3
 # WARNING: The previous demand cannot be recovered if it was higher than the MaxDemand.
 MaxDemand: -1
 
+# The maximum number of times a player can make any trade before a villager is out of stock.
+#   * Set to -1 to disable this feature and keep vanilla behavior
+#   * Set to 0 or higher to change the maximum number of uses for all items
+# For default vanilla settings, see https://minecraft.fandom.com/el/wiki/Trading#Java_Edition
+MaxUses: -1
+
 
 #-------------------------------- PER-ITEM SETTINGS --------------------------------#
 # Override the global settings for individual items. To disable, set like this --> Overrides: none
