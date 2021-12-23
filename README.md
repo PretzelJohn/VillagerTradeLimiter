@@ -85,7 +85,8 @@
                 <td>The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases.<br/><strong>Options:</strong>
                     <ul>
                         <li>Set to -1.0 to disable this feature and keep vanilla behavior</li>
-                        <li>Set to a number between 0.0 and 1.0 to set the maximum discount a player can get. (NOTE: 30% = 0.3)</li>
+                        <li>Set to a number between 0.0 and 1.0 to limit the maximum discount a player can get. (NOTE: 30% = 0.3)</li>
+                        <li>Set to a number above 1.0 to increase the maximum discount a player can get. (NOTE: 250% = 2.5)</li>
                     </ul>
                 </td>
             </tr>
@@ -139,11 +140,11 @@
             </tr>
             <tr>
                 <td><code>.Item1.Material:</code><br><code>.Item2.Material:</code></td>
-                <td>Sets the material of the 1st or 2nd item in the trade</td>
+                <td>Sets the material of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
             <tr>
                 <td><code>.Item1.Amount:</code><br><code>.Item2.Amount:</code></td>
-                <td>Sets the amount of the 1st or 2nd item in the trade</td>
+                <td>Sets the amount of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
         </table>
     </li>

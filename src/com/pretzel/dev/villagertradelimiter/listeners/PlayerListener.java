@@ -126,7 +126,7 @@ public class PlayerListener implements Listener {
         for(final NBTCompound recipe : recipes) {
             final int ingredientAmount = recipe.getCompound("buy").getInteger("Count");
             final float priceMultiplier = this.getPriceMultiplier(recipe);
-            final int valueModifier = 5 * majorPositiveValue + minorPositiveValue + tradingValue - minorNegativeValue - 5 * majorNegativeValue;
+            final int valueModifier = (5 * majorPositiveValue) + minorPositiveValue + tradingValue - minorNegativeValue - (5 * majorNegativeValue);
             final float finalValue = ingredientAmount - priceMultiplier * valueModifier;
 
             boolean disabled = false;
@@ -174,6 +174,8 @@ public class PlayerListener implements Listener {
                 } else {
                     recipe.setFloat("priceMultiplier", priceMultiplier);
                 }
+            } else if(maxDiscount > 1.0) {
+                recipe.setFloat("priceMultiplier", priceMultiplier * (float) maxDiscount);
             } else {
                 recipe.setFloat("priceMultiplier", priceMultiplier);
             }

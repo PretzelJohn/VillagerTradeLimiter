@@ -20,7 +20,8 @@ MaxHeroLevel: 1
 
 # The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases.
 #   * Set to -1.0 to disable this feature and keep vanilla behavior
-#   * Set to a number between 0.0 and 1.0 to set the maximum discount a player can get. (NOTE: 30% = 0.3)
+#   * Set to a number between 0.0 and 1.0 to limit the maximum discount a player can get. (NOTE: 30% = 0.3)
+#   * Set to a number above 1.0 to increase the maximum discount a player can get. (NOTE: 250% = 2.5)
 MaxDiscount: 0.3
 
 # The maximum demand for all items. This limits demand-based price increases.
