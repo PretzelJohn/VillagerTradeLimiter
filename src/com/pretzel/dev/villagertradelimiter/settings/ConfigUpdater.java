@@ -1,4 +1,4 @@
-package com.pretzel.dev.villagertradelimiter.lib;
+package com.pretzel.dev.villagertradelimiter.settings;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.configuration.ConfigurationSection;

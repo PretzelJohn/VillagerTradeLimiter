@@ -1,5 +1,7 @@
-package com.pretzel.dev.villagertradelimiter.lib;
+package com.pretzel.dev.villagertradelimiter.commands;
 
+import com.pretzel.dev.villagertradelimiter.lib.Callback;
+import com.pretzel.dev.villagertradelimiter.lib.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,6 +18,11 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     private final Callback<Player> callback;
     private final ArrayList<CommandBase> subs;
 
+    /**
+     * @param name The name of the command
+     * @param permission The permission required to use the command
+     * @param callback The callback that is called when the command is executed
+     */
     public CommandBase(String name, String permission, Callback<Player> callback) {
         this.name = name;
         this.permission = permission;
@@ -23,6 +30,10 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         this.subs = new ArrayList<>();
     }
 
+    /**
+     * @param command The child command to add
+     * @return The given child command
+     */
     public CommandBase addSub(CommandBase command) {
         this.subs.add(command);
         return command;
@@ -69,12 +80,17 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         return list;
     }
 
+    /**
+     * @param args The arguments to be copied
+     * @return The copied arguments
+     */
     private static String[] getCopy(final String[] args) {
         String[] res = new String[args.length-1];
         System.arraycopy(args, 1, res, 0, res.length);
         return res;
     }
 
+    /** @return The current online player list */
     private static List<String> getPlayerList() {
         final List<String> players = new ArrayList<>();
         for(Player p : Bukkit.getOnlinePlayers())
@@ -82,6 +98,9 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         return players;
     }
 
+    /** @return The name of this command */
     public String getName() { return this.name; }
+
+    /** @return The permission required to use this command */
     public String getPermission() { return this.permission; }
 }

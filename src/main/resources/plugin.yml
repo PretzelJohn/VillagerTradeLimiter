@@ -1,7 +1,7 @@
 name: VillagerTradeLimiter
 author: PretzelJohn
 main: com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter
-version: 1.4.4
+version: 1.5.0
 api-version: 1.14
 
 commands:
@@ -16,10 +16,18 @@ permissions:
     children:
       villagertradelimiter.use: true
       villagertradelimiter.reload: true
+      villagertradelimiter.see: true
+      villagertradelimiter.invsee: true
     default: op
   villagertradelimiter.use:
     description: Allows players to use VillagerTradeLimiter.
     default: op
   villagertradelimiter.reload:
     description: Allows players to reload config.yml.
+    default: op
+  villagertradelimiter.see:
+    description: Allows players to see the trades for another player
+    default: op
+  villagertradelimiter.invsee:
+    description: Allows players to see inventory of a villager
     default: op

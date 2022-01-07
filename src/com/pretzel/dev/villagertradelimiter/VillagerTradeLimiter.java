@@ -1,31 +1,37 @@
 package com.pretzel.dev.villagertradelimiter;
 
-import com.pretzel.dev.villagertradelimiter.lib.CommandBase;
-import com.pretzel.dev.villagertradelimiter.lib.ConfigUpdater;
+import com.pretzel.dev.villagertradelimiter.commands.CommandManager;
+import com.pretzel.dev.villagertradelimiter.commands.CommandBase;
+import com.pretzel.dev.villagertradelimiter.settings.ConfigUpdater;
 import com.pretzel.dev.villagertradelimiter.lib.Metrics;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.listeners.PlayerListener;
+import com.pretzel.dev.villagertradelimiter.settings.Lang;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.*;
 
 public class VillagerTradeLimiter extends JavaPlugin {
     public static final String PLUGIN_NAME = "VillagerTradeLimiter";
     public static final String PREFIX = ChatColor.GOLD+"["+PLUGIN_NAME+"] ";
+    private static final int BSTATS_ID = 9829;
 
     //Settings
     private FileConfiguration cfg;
+    private Lang lang;
+    private CommandManager commandManager;
+    private PlayerListener playerListener;
 
     //Initial plugin load/unload
     public void onEnable() {
         //Initialize instance variables
         this.cfg = null;
+        this.commandManager = new CommandManager(this);
 
         //Copy default settings & load settings
         this.getConfig().options().copyDefaults();
@@ -34,6 +40,7 @@ public class VillagerTradeLimiter extends JavaPlugin {
         this.loadBStats();
 
         //Register commands and listeners
+        this.playerListener = new PlayerListener(this);
         this.registerCommands();
         this.registerListeners();
 
@@ -41,9 +48,8 @@ public class VillagerTradeLimiter extends JavaPlugin {
         Util.consoleMsg(PREFIX+PLUGIN_NAME+" is running!");
     }
 
-    //Loads or reloads config.yml settings
+    //Loads or reloads config.yml and messages.yml
     public void loadSettings() {
-        //Load config.yml
         final String mainPath = this.getDataFolder().getPath()+"/";
         final File file = new File(mainPath, "config.yml");
         try {
@@ -52,44 +58,36 @@ public class VillagerTradeLimiter extends JavaPlugin {
             Util.errorMsg(e);
         }
         this.cfg = YamlConfiguration.loadConfiguration(file);
+        this.lang = new Lang(this, this.getTextResource("messages.yml"), mainPath);
     }
 
+    //Load and initialize the bStats class with the plugin id
     private void loadBStats() {
-        if(this.cfg.getBoolean("bStats", true)) new Metrics(this, 9829);
+        if(this.cfg.getBoolean("bStats", true)) {
+            new Metrics(this, BSTATS_ID);
+        }
     }
 
     //Registers plugin commands
     private void registerCommands() {
-        final String reloaded = Util.replaceColors("&eVillagerTradeLimiter &ahas been reloaded!");
-        final CommandBase vtl = new CommandBase("villagertradelimiter", "villagertradelimiter.use", (p,args) -> this.help(p));
-        vtl.addSub(new CommandBase("reload", "villagertradelimiter.reload", (p,args) -> {
-            loadSettings();
-            Util.sendMsg(reloaded, p);
-        }));
-        this.getCommand("villagertradelimiter").setExecutor(vtl);
-        this.getCommand("villagertradelimiter").setTabCompleter(vtl);
+        final CommandBase cmd = this.commandManager.getCommands();
+        this.getCommand("villagertradelimiter").setExecutor(cmd);
+        this.getCommand("villagertradelimiter").setTabCompleter(cmd);
     }
 
     //Registers plugin listeners
     private void registerListeners() {
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        this.getServer().getPluginManager().registerEvents(this.playerListener, this);
     }
 
-    // ------------------------- Commands -------------------------
-    private void help(final Player p) {
-        if(p != null) {
-            if(!p.hasPermission("villagertradelimiter.use") && !p.hasPermission("villagertradelimiter.*")) return;
-            p.sendMessage(ChatColor.GREEN+"VillagerTradeLimiter commands:");
-            p.sendMessage(ChatColor.AQUA+"/vtl "+ChatColor.WHITE+"- shows this help message");
-            Util.sendIfPermitted("villagertradelimiter.reload", ChatColor.AQUA+"/vtl reload "+ChatColor.WHITE+"- reloads config.yml", p);
-        } else {
-            Util.consoleMsg(ChatColor.GREEN+"VillagerTradeLimiter commands:");
-            Util.consoleMsg(ChatColor.AQUA+"/vtl "+ChatColor.WHITE+"- shows this help message");
-            Util.consoleMsg(ChatColor.AQUA+"/vtl reload "+ChatColor.WHITE+"- reloads config.yml");
-        }
-    }
 
     // ------------------------- Getters -------------------------
     //Returns the settings from config.yml
     public FileConfiguration getCfg() { return this.cfg; }
+
+    //Returns a language setting from messages.yml
+    public String getLang(final String path) { return this.lang.get(path); }
+
+    //Returns this plugin's player listener
+    public PlayerListener getPlayerListener() { return this.playerListener; }
 }
