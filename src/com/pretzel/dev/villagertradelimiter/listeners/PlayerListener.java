@@ -1,6 +1,7 @@
 package com.pretzel.dev.villagertradelimiter.listeners;
 
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
+import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
@@ -11,31 +12,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class PlayerListener implements Listener {
     private final VillagerTradeLimiter instance;
     private final Settings settings;
-    private final HashMap<Player, PlayerData> playerData;
 
-    /** @param instance The instance of VillagerTradeLimiter.java */
-    public PlayerListener(VillagerTradeLimiter instance) {
+    /**
+     * @param instance The instance of VillagerTradeLimiter.java
+     * @param settings The settings instance
+     */
+    public PlayerListener(final VillagerTradeLimiter instance, final Settings settings) {
         this.instance = instance;
-        this.settings = new Settings(instance);
-        this.playerData = new HashMap<>();
+        this.settings = settings;
     }
 
     /** Handles when a player begins trading with a villager */
     @EventHandler
-    public void onPlayerBeginTrading(PlayerInteractEntityEvent event) {
+    public void onPlayerBeginTrading(final PlayerInteractEntityEvent event) {
         if(!(event.getRightClicked() instanceof Villager)) return;
         final Villager villager = (Villager)event.getRightClicked();
         if(Util.isNPC(villager)) return; //Skips NPCs
@@ -44,11 +42,13 @@ public class PlayerListener implements Listener {
 
         //DisableTrading feature
         if(instance.getCfg().isBoolean("DisableTrading")) {
+            //If all trading is disabled
             if(instance.getCfg().getBoolean("DisableTrading", false)) {
                 event.setCancelled(true);
                 return;
             }
         } else {
+            //If trading in the world the player is in is disabled
             final List<String> disabledWorlds = instance.getCfg().getStringList("DisableTrading");
             final String world = event.getPlayer().getWorld().getName();
             for(String disabledWorld : disabledWorlds) {
@@ -59,26 +59,13 @@ public class PlayerListener implements Listener {
             }
         }
 
+        //Cancel the original event, and open the adjusted trade view
         event.setCancelled(true);
         final Player player = event.getPlayer();
+        if(!instance.getPlayerData().containsKey(player.getUniqueId())) {
+            instance.getPlayerData().put(player.getUniqueId(), new PlayerData());
+        }
         this.see(villager, player, player);
-    }
-
-    /** Handles when a player stops trading with a villager */
-    @EventHandler
-    public void onPlayerStopTrading(final InventoryCloseEvent event) {
-        //Don't do anything unless the player is actually finished trading with a villager
-        if(event.getInventory().getType() != InventoryType.MERCHANT) return;
-        if(!(event.getPlayer() instanceof Player)) return;
-        final Player player = (Player)event.getPlayer();
-        if(Util.isNPC(player)) return;
-        if(getPlayerData(player).getTradingVillager() == null) return;
-
-        //Reset the villager's NBT data when a player is finished trading
-        final VillagerWrapper villager = playerData.get(player).getTradingVillager();
-        getPlayerData(player).setTradingVillager(null);
-        if(villager == null) return;
-        villager.reset();
     }
 
     /**
@@ -92,6 +79,9 @@ public class PlayerListener implements Listener {
         final VillagerWrapper villagerWrapper = new VillagerWrapper(villager);
         final PlayerWrapper otherWrapper = new PlayerWrapper(other);
         if(Util.isNPC(villager) || Util.isNPC(player) || otherWrapper.isNPC()) return; //Skips NPCs
+
+        final PlayerData playerData = instance.getPlayerData().get(other.getUniqueId());
+        if(playerData != null) playerData.setTradingVillager(villagerWrapper);
 
         //Checks if the version is old, before the 1.16 UUID changes
         String version = instance.getServer().getClass().getPackage().getName();
@@ -108,7 +98,7 @@ public class PlayerListener implements Listener {
             recipe.setSpecialPrice(getDiscount(recipe, totalReputation, hotvDiscount));
 
             //Set ingredient materials and amounts
-            final ConfigurationSection override = settings.getOverride(recipe);
+            final ConfigurationSection override = settings.getOverride(recipe.getItemStack("buy"), recipe.getItemStack("sell"));
             if(override != null) {
                 setIngredient(override.getConfigurationSection("Item1"), recipe.getIngredient1());
                 setIngredient(override.getConfigurationSection("Item2"), recipe.getIngredient2());
@@ -116,17 +106,11 @@ public class PlayerListener implements Listener {
             }
 
             //Set the maximum number of uses (trades/day)
-            recipe.setMaxUses(getMaxUses(recipe));
+            recipe.setMaxUses(getMaxUses(recipe, other));
         }
 
         //Open the villager's trading menu
-        getPlayerData(player).setTradingVillager(villagerWrapper);
         player.openMerchant(villager, false);
-    }
-
-    @EventHandler
-    public void onPickupItem(InventoryPickupItemEvent event) {
-        Util.consoleMsg("Picked up!");
     }
 
     /**
@@ -178,10 +162,27 @@ public class PlayerListener implements Listener {
      * @param recipe The recipe to get the MaxUses for
      * @return The current maximum number of times a player can make a trade before the villager restocks
      */
-    private int getMaxUses(final RecipeWrapper recipe) {
+    private int getMaxUses(final RecipeWrapper recipe, final OfflinePlayer player) {
         int uses = recipe.getMaxUses();
         int maxUses = settings.fetchInt(recipe, "MaxUses", -1);
         boolean disabled = settings.fetchBoolean(recipe, "Disabled", false);
+
+        final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
+        if(playerData != null && playerData.getTradingVillager() != null) {
+            final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
+            if(overrides != null) {
+                final String type = settings.getType(recipe.getItemStack("sell"), recipe.getItemStack("buy"), recipe.getItemStack("buyB"));
+                if(type != null && overrides.contains(type+".Cooldown")) {
+                    if(playerData.getTradingCooldowns().containsKey(type)) {
+                        if(System.currentTimeMillis() >= playerData.getTradingCooldowns().get(type) + Cooldown.parseTime(overrides.getString(type+".Cooldown"))) {
+                            playerData.getTradingCooldowns().remove(type);
+                        } else {
+                            maxUses = 0;
+                        }
+                    }
+                }
+            }
+        }
 
         if(maxUses < 0) maxUses = uses;
         if(disabled) maxUses = 0;
@@ -219,16 +220,5 @@ public class PlayerListener implements Listener {
         if(item == null) return;
         ingredient.setMaterialId("minecraft:"+item.getString("Material", ingredient.getMaterialId()).replace("minecraft:",""));
         ingredient.setAmount(item.getInt("Amount", ingredient.getAmount()));
-    }
-
-    /**
-     * @param player The player to get the data container for
-     * @return The data container for the given player
-     */
-    private PlayerData getPlayerData(final Player player) {
-        if(playerData.containsKey(player) && playerData.get(player) != null) return playerData.get(player);
-        final PlayerData pd = new PlayerData(player);
-        playerData.put(player, pd);
-        return pd;
     }
 }

@@ -1,22 +1,23 @@
 package com.pretzel.dev.villagertradelimiter.data;
 
 import com.pretzel.dev.villagertradelimiter.wrappers.VillagerWrapper;
-import org.bukkit.entity.Player;
+
+import java.util.HashMap;
 
 public class PlayerData {
-    private final Player player;
+    private final HashMap<String, Long> tradingCooldowns;
     private VillagerWrapper tradingVillager;
 
-    public PlayerData(final Player player) {
-        this.player = player;
+    public PlayerData() {
+        this.tradingCooldowns = new HashMap<>();
         this.tradingVillager = null;
     }
 
-    /** @param tradingVillager The villager that this player is currently trading with */
-    public void setTradingVillager(VillagerWrapper tradingVillager) { this.tradingVillager = tradingVillager; }
+    /** @return The map of items to timestamps for the player's trading history */
+    public HashMap<String, Long> getTradingCooldowns() { return this.tradingCooldowns; }
 
-    /** @return The player that this data is for */
-    public Player getPlayer() { return this.player; }
+    /** @param tradingVillager The villager that this player is currently trading with */
+    public void setTradingVillager(final VillagerWrapper tradingVillager) { this.tradingVillager = tradingVillager; }
 
     /** @return The villager that this player is currently trading with */
     public VillagerWrapper getTradingVillager() { return this.tradingVillager; }

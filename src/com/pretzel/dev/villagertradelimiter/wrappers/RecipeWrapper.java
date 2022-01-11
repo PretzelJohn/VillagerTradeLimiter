@@ -71,9 +71,6 @@ public class RecipeWrapper {
     /** @return The maximum number of times a player can make a trade before the villager restocks */
     public int getMaxUses() { return recipe.getInteger("maxUses"); }
 
-    /** @return The ItemStack representation of the first ingredient */
-    public ItemStack getBuyItemStack() { return recipe.getItemStack("buy"); }
-
-    /** @return The ItemStack representation of the result */
-    public ItemStack getSellItemStack() { return recipe.getItemStack("sell"); }
+    /** @return The ItemStack representation of an ingredient or the result */
+    public ItemStack getItemStack(final String key) { return recipe.getItemStack(key); }
 }

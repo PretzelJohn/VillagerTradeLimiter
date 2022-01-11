@@ -25,7 +25,7 @@ public class Settings {
      */
     public boolean fetchBoolean(final RecipeWrapper recipe, String key, boolean defaultValue) {
         boolean global = instance.getCfg().getBoolean(key, defaultValue);
-        final ConfigurationSection override = getOverride(recipe);
+        final ConfigurationSection override = getOverride(recipe.getItemStack("buy"), recipe.getItemStack("sell"));
         if(override != null) return override.getBoolean(key, global);
         return global;
     }
@@ -38,7 +38,7 @@ public class Settings {
      */
     public int fetchInt(final RecipeWrapper recipe, String key, int defaultValue) {
         int global = instance.getCfg().getInt(key, defaultValue);
-        final ConfigurationSection override = getOverride(recipe);
+        final ConfigurationSection override = getOverride(recipe.getItemStack("buy"), recipe.getItemStack("sell"));
         if(override != null) return override.getInt(key, global);
         return global;
     }
@@ -51,20 +51,51 @@ public class Settings {
      */
     public double fetchDouble(final RecipeWrapper recipe, String key, double defaultValue) {
         double global = instance.getCfg().getDouble(key, defaultValue);
-        final ConfigurationSection override = getOverride(recipe);
+        final ConfigurationSection override = getOverride(recipe.getItemStack("buy"), recipe.getItemStack("sell"));
         if(override != null) return override.getDouble(key, global);
         return global;
     }
 
     /**
-     * @param recipe The wrapped recipe to fetch any overrides for
+     * @param result The itemstack for the recipe's result
+     * @param ingredient1 The itemstack for the recipe's first ingredient
+     * @param ingredient2 The itemstack for the recipe's second ingredient
+     * @return The matched type of the item, if any
+     */
+    public String getType(final ItemStack result, final ItemStack ingredient1, final ItemStack ingredient2) {
+        final String resultType = result.getType().name().toLowerCase();
+        final String ingredient1Type = ingredient1.getType().name().toLowerCase();
+        final String ingredient2Type = ingredient2.getType().name().toLowerCase();
+
+        if(result.getType() == Material.ENCHANTED_BOOK) {
+            final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) result.getItemMeta();
+            if(meta == null) return null;
+            for(Enchantment key : meta.getStoredEnchants().keySet()) {
+                if (key != null) {
+                    final String itemType = key.getKey().getKey() +"_"+meta.getStoredEnchantLevel(key);
+                    if(getItem(ingredient1, result, itemType) != null) return itemType;
+                }
+            }
+            return null;
+        }
+
+        final ItemStack ingredient = (ingredient1.getType() == Material.AIR ? ingredient2 : ingredient1);
+        if(getItem(ingredient, result, resultType) != null) return resultType;
+        if(getItem(ingredient, result, ingredient1Type) != null) return ingredient1Type;
+        if(getItem(ingredient, result, ingredient2Type) != null) return ingredient2Type;
+        return null;
+    }
+
+    /**
+     * @param buy The first ingredient of the recipe
+     * @param sell The result of the recipe
      * @return The corresponding override config section for the recipe, if it exists, or null
      */
-    public ConfigurationSection getOverride(final RecipeWrapper recipe) {
+    public ConfigurationSection getOverride(final ItemStack buy, ItemStack sell) {
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
         if(overrides != null) {
             for(final String override : overrides.getKeys(false)) {
-                final ConfigurationSection item = this.getItem(recipe, override);
+                final ConfigurationSection item = this.getItem(buy, sell, override);
                 if(item != null) return item;
             }
         }
@@ -72,17 +103,18 @@ public class Settings {
     }
 
     /**
-     * @param recipe The wrapped recipe to fetch any overrides for
+     * @param buy The first ingredient of the recipe
+     * @param sell The result of the recipe
      * @param key The key where the override settings are stored in config.yml
      * @return The corresponding override config section for the recipe, if it exists, or null
      */
-    public ConfigurationSection getItem(final RecipeWrapper recipe, final String key) {
+    public ConfigurationSection getItem(final ItemStack buy, final ItemStack sell, final String key) {
         final ConfigurationSection item = instance.getCfg().getConfigurationSection("Overrides."+key);
         if(item == null) return null;
 
         if(!key.contains("_")) {
             //Return the item if the item name is valid
-            if(this.verify(recipe, Material.matchMaterial(key))) return item;
+            if(this.verify(buy, sell, Material.matchMaterial(key))) return item;
             return null;
         }
 
@@ -90,15 +122,15 @@ public class Settings {
         try {
             //Return the enchanted book item if there's a number in the item name
             final int level = Integer.parseInt(words[words.length-1]);
-            if(recipe.getSellItemStack().getType() == Material.ENCHANTED_BOOK) {
-                final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) recipe.getSellItemStack().getItemMeta();
+            if(sell.getType() == Material.ENCHANTED_BOOK) {
+                final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) sell.getItemMeta();
                 final Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(key.substring(0, key.lastIndexOf("_"))));
                 if (meta == null || enchantment == null) return null;
                 if (meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
             }
         } catch(NumberFormatException e) {
             //Return the item if the item name is valid
-            if(this.verify(recipe, Material.matchMaterial(key)))
+            if(this.verify(buy, sell, Material.matchMaterial(key)))
                 return item;
             return null;
         } catch(Exception e2) {
@@ -109,11 +141,12 @@ public class Settings {
     }
 
     /**
-     * @param recipe The wrapped recipe to match with the override setting
+     * @param buy The first ingredient of the recipe
+     * @param sell The result of the recipe
      * @param material The material to compare the recipe against
      * @return True if a recipe matches an override section, false otherwise
      */
-    private boolean verify(final RecipeWrapper recipe, final Material material) {
-        return ((recipe.getSellItemStack().getType() == material) || (recipe.getBuyItemStack().getType() == material));
+    private boolean verify(final ItemStack buy, final ItemStack sell, final Material material) {
+        return ((buy.getType() == material) || (sell.getType() == material));
     }
 }

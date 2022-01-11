@@ -8,6 +8,17 @@
 # This helps me keep track of what server versions are being used. Please leave this set to true.
 bStats: true
 
+# Database connection settings
+database:
+  mysql: false
+  host: 127.0.0.1
+  port: 3306
+  database: villagertradelimiter
+  username: root
+  password: root
+  encoding: utf8
+  useSSL: false
+
 # Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
 DisableTrading:
 - world_nether
@@ -17,7 +28,7 @@ DisableTrading:
 #   * Set to -1 to disable this feature and keep vanilla behavior.
 #   * Set to a number between 0 and 5 to set the maximum HotV effect level players can have
 # For more information, see https://minecraft.fandom.com/wiki/Hero_of_the_Village#Price_decrement
-MaxHeroLevel: 1
+MaxHeroLevel: -1
 
 # The maximum discount (%) you can get from trading/healing zombie villagers. This limits reputation-based price decreases.
 #   * Set to -1.0 to disable this feature and keep vanilla behavior
@@ -55,12 +66,13 @@ Overrides:
     MaxDiscount: -1.0
     MaxDemand: 60
     MaxUses: 2
+    Cooldown: 7d
     Item1:
       Material: "book"
       Amount: 64
     Item2:
       Material: "ink_sac"
-      Amount: 64
+      Amount: 48
     Result:
       Material: "name_tag"
       Amount: 2
