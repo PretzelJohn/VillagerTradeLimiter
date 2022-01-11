@@ -2,7 +2,8 @@
 <h6>by PretzelJohn</h6>
 
 <h2>Description:</h2>
-<p>This Minecraft plugin limits the villager trade deals that players can get when they cure a zombie villager.</p>
+<p>This Minecraft plugin limits the villager trade deals that players can get.</p>
+<p>Click <a href="https://www.spigotmc.org/resources/87210/">here</a> to see this plugin on Spigot.</p>
 <br>
 
 <h2>Commands:</h2>
@@ -15,12 +16,22 @@
     <tr>
         <td><code>/villagertradelimiter</code></td>
         <td><code>/vtl</code></td>
-        <td>shows a help message</td>
+        <td>Shows a help message</td>
     </tr>
     <tr>
         <td><code>/villagertradelimiter reload</code></td>
         <td><code>/vtl reload</code></td>
-        <td>reloads config.yml</td>
+        <td>Reloads config.yml</td>
+    </tr>
+    <tr>
+        <td><code>/villagertradelimiter see &lt;player&gt;</code></td>
+        <td><code>/vtl see &lt;player&gt;</code></td>
+        <td>Shows the trades for another player.<br/>To use, look at the villager you want<br/>to see the trades for.</td>
+    </tr>
+    <tr>
+        <td><code>/villagertradelimiter invsee</code></td>
+        <td><code>/vtl invsee</code></td>
+        <td>Shows the inventory of a villager. <br/>To use, look at the villager you want<br/>to see the trades for.</td>
     </tr>
 </table><br>
 
@@ -33,7 +44,7 @@
     </tr>
     <tr>
         <td>villagertradelimiter.*</td>
-        <td>Allows players to use <code>/vtl</code> and <code>/vtl reload</code></td>
+        <td>Allows players to use ALL commands</td>
         <td>OP</td>
     </tr>
     <tr>
@@ -44,6 +55,16 @@
     <tr>
         <td>villagertradelimiter.reload</td>
         <td>Allows players to reload config.yml and messages.yml</td>
+        <td>OP</td>
+    </tr>
+    <tr>
+        <td>villagertradelimiter.see</td>
+        <td>Allows players to see the trades for another player<br/>with <code>/vtl see &lt;player&gt;</code></td>
+        <td>OP</td>
+    </tr>
+    <tr>
+        <td>villagertradelimiter.invsee</td>
+        <td>Allows players to see inventory of a villager<br/>with <code>/vtl invsee</code></td>
         <td>OP</td>
     </tr>
 </table><br>
@@ -60,6 +81,38 @@
             <tr>
                 <td><code>bStats:</code></td>
                 <td>This helps me keep track of what server versions are being used. Please leave this set to true.</td>
+            </tr>
+            <tr>
+                <td><code>database.mysql:</code></td>
+                <td>Whether to use MySQL for the database (true) or SQLite (false)</td>
+            </tr>
+            <tr>
+                <td><code>database.host:</code></td>
+                <td>The IP address or domain name of your MySQL server. If the MySQL database is on the same server as your Minecraft server, leave this as <code>127.0.0.1</code></td>
+            </tr>
+            <tr>
+                <td><code>database.port:</code></td>
+                <td>The port number of your MySQL server. Usually <code>3306</code>.</td>
+            </tr>
+            <tr>
+                <td><code>database.database:</code></td>
+                <td>The name of your MySQL database, or schema. You must create a database (schema) before using this plugin!</td>
+            </tr>
+            <tr>
+                <td><code>database.username:</code></td>
+                <td>The username to access your MySQL database.</td>
+            </tr>
+            <tr>
+                <td><code>database.password:</code></td>
+                <td>The password to access your MySQL database.</td>
+            </tr>
+            <tr>
+                <td><code>database.encoding:</code></td>
+                <td>If your MySQL database uses an encoding other than <code>utf8</code>, change this.</td>
+            </tr>
+            <tr>
+                <td><code>database.useSSL:</code></td>
+                <td>If your MySQL database can use SSL connections, set this to <code>true</code>!</td>
             </tr>
             <tr>
                 <td><code>DisableTrading:</code></td>
@@ -139,11 +192,15 @@
                 <td>Sets the maximum number of times a player can make the trade before the villager is out of stock</td>
             </tr>
             <tr>
-                <td><code>.Item1.Material:</code><br><code>.Item2.Material:</code></td>
+                <td><code>.Cooldown:</code></td>
+                <td>Sets the time between restocks for the trade, and applies to ALL villagers. Once the player reaches the <code>MaxUses</code>, the cooldown begins. The trade is disabled for all villagers until the cooldown expires.<br><strong>FORMAT:</strong> &lt;Number&gt;&lt;interval&gt;<br><strong>EXAMPLE:</strong> 30s = 30 seconds, 5m = 5 minutes, 4h = 4 hours, 7d = 7 days</td>
+            </tr>
+            <tr>
+                <td><code>.Item1.Material:</code><br><code>.Item2.Material:</code><br><code>.Result.Material:</code></td>
                 <td>Sets the material of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
             <tr>
-                <td><code>.Item1.Amount:</code><br><code>.Item2.Amount:</code></td>
+                <td><code>.Item1.Amount:</code><br><code>.Item2.Amount:</code><br><code>.Result.Amount:</code></td>
                 <td>Sets the amount of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
         </table>
