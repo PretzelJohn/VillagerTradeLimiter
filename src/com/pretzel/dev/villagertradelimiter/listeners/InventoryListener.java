@@ -1,6 +1,7 @@
 package com.pretzel.dev.villagertradelimiter.listeners;
 
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
+import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
@@ -18,7 +19,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
+import java.time.Instant;
+import java.util.Date;
+
 public class InventoryListener implements Listener {
+
     private final VillagerTradeLimiter instance;
     private final Settings settings;
 
@@ -74,7 +79,13 @@ public class InventoryListener implements Listener {
         if(overrides == null) return;
 
         final String type = settings.getType(result, ingredient1, ingredient2);
-        if(type == null || !overrides.contains(type+".Cooldown")) return;
+        if(instance.getCfg().getString("Cooldown", "0").equals("0")) {
+            Util.consoleMsg("global cooldown is 0");
+            if(overrides.getString(type+".Cooldown", "0").equals("0")) {
+                Util.consoleMsg("local cooldown is 0");
+                return;
+            }
+        }
 
         //Get the selected recipe by the items in the slots
         final MerchantRecipe selectedRecipe = getSelectedRecipe((Villager)event.getInventory().getHolder(), ingredient1, ingredient2, result);
@@ -89,7 +100,7 @@ public class InventoryListener implements Listener {
         Bukkit.getScheduler().runTaskLater(instance, () -> {
             int uses = selectedRecipe.getUses();
             if(!playerData.getTradingCooldowns().containsKey(type) && uses >= selectedRecipe.getMaxUses()) {
-                playerData.getTradingCooldowns().put(type, System.currentTimeMillis());
+                playerData.getTradingCooldowns().put(type, Cooldown.formatTime(Date.from(Instant.now())));
             }
         }, 1);
     }

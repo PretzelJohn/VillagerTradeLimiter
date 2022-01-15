@@ -66,24 +66,34 @@ public class Settings {
         final String resultType = result.getType().name().toLowerCase();
         final String ingredient1Type = ingredient1.getType().name().toLowerCase();
         final String ingredient2Type = ingredient2.getType().name().toLowerCase();
+        final String defaultType;
+        if(result.getType() == Material.EMERALD) {
+            if(ingredient1.getType() == Material.BOOK || ingredient1.getType() == Material.AIR) {
+                defaultType = ingredient2Type;
+            } else {
+                defaultType = ingredient1Type;
+            }
+        } else {
+            defaultType = resultType;
+        }
 
         if(result.getType() == Material.ENCHANTED_BOOK) {
             final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) result.getItemMeta();
-            if(meta == null) return null;
+            if(meta == null) return defaultType;
             for(Enchantment key : meta.getStoredEnchants().keySet()) {
                 if (key != null) {
                     final String itemType = key.getKey().getKey() +"_"+meta.getStoredEnchantLevel(key);
                     if(getItem(ingredient1, result, itemType) != null) return itemType;
                 }
             }
-            return null;
+            return defaultType;
         }
 
         final ItemStack ingredient = (ingredient1.getType() == Material.AIR ? ingredient2 : ingredient1);
         if(getItem(ingredient, result, resultType) != null) return resultType;
         if(getItem(ingredient, result, ingredient1Type) != null) return ingredient1Type;
         if(getItem(ingredient, result, ingredient2Type) != null) return ingredient2Type;
-        return null;
+        return defaultType;
     }
 
     /**

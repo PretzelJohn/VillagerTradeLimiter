@@ -49,6 +49,18 @@ MaxDemand: -1
 # For more information, see https://minecraft.fandom.com/el/wiki/Trading#Java_Edition
 MaxUses: -1
 
+# The per-player, per-trade cooldown in real-world time.
+# After a player makes a trade <MaxUses> times, the trade will be disabled for the player until the cooldown is over.
+#   * Set to 0 to disable this feature and keep vanilla behavior
+#   * Set to a number and interval to add a per-player, per-trade cooldown for all trades (see below)
+# A valid cooldown follows the <Number><Interval> format, such as 7d or 30s. The valid intervals are:
+#   * s = seconds (e.g. 30s)
+#   * m = minutes (e.g. 10m)
+#   * h = hours   (e.g. 1h)
+#   * d = days    (e.g. 3d)
+#   * w = weeks   (e.g. 2w)
+Cooldown: 0
+
 
 #-------------------------------- PER-ITEM SETTINGS --------------------------------#
 # Override the global settings for individual items. To disable, set like this --> Overrides: none

@@ -6,6 +6,8 @@ import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 public class DatabaseManager {
@@ -13,7 +15,7 @@ public class DatabaseManager {
             "CREATE TABLE IF NOT EXISTS vtl_cooldown("+
                     "uuid CHAR(36) NOT NULL,"+
                     "item VARCHAR(255) NOT NULL,"+
-                    "time BIGINT NOT NULL,"+
+                    "time TEXT NOT NULL,"+
                     "PRIMARY KEY(uuid, item));";
     private static final String SELECT_ITEMS = "SELECT * FROM vtl_cooldown;";
     private static final String INSERT_ITEM = "INSERT OR IGNORE INTO vtl_cooldown(uuid,item,time) VALUES?;"; //INSERT IGNORE INTO for MySQL
@@ -46,7 +48,9 @@ public class DatabaseManager {
 
                     UUID uuid = UUID.fromString(tokens[0]);
                     String item = tokens[1];
-                    long time = Long.parseLong(tokens[2]);
+                    final Date date = Cooldown.parseTime(tokens[2]);
+                    if(date == null) continue;
+                    long time = date.getTime();
 
                     PlayerData playerData = instance.getPlayerData().get(uuid);
                     if(playerData == null) {
@@ -54,9 +58,12 @@ public class DatabaseManager {
                         instance.getPlayerData().put(uuid, playerData);
                     }
 
-                    String cooldown = instance.getCfg().getString("Overrides."+item+".Cooldown", null);
-                    if(cooldown != null && System.currentTimeMillis() < time + Cooldown.parseTime(cooldown)) {
-                        playerData.getTradingCooldowns().put(item, time);
+                    final Date now = Date.from(Instant.now());
+                    final String global = instance.getCfg().getString("Cooldown", "0");
+                    final String local = instance.getCfg().getString("Overrides."+item+".Cooldown", global);
+                    long cooldown = Cooldown.parseCooldown(local);
+                    if(cooldown != 0 && now.getTime()/1000L < time/1000L + cooldown) {
+                        playerData.getTradingCooldowns().put(item, Cooldown.formatTime(date));
                     }
                 }
             }
@@ -81,7 +88,7 @@ public class DatabaseManager {
 
         String values = "";
         for(String item : playerData.getTradingCooldowns().keySet()) {
-            long time = playerData.getTradingCooldowns().get(item);
+            String time = playerData.getTradingCooldowns().get(item);
 
             if(!values.isEmpty()) values += ",";
             values += "('"+uuid+"','"+item+"','"+time+"')";

@@ -16,6 +16,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 public class PlayerListener implements Listener {
@@ -172,9 +174,14 @@ public class PlayerListener implements Listener {
             final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
             if(overrides != null) {
                 final String type = settings.getType(recipe.getItemStack("sell"), recipe.getItemStack("buy"), recipe.getItemStack("buyB"));
-                if(type != null && overrides.contains(type+".Cooldown")) {
+                final String global = instance.getCfg().getString("Cooldown", "0");
+                final String local = overrides.getString(type+".Cooldown", global);
+                if(type != null && !local.equals("0")) {
                     if(playerData.getTradingCooldowns().containsKey(type)) {
-                        if(System.currentTimeMillis() >= playerData.getTradingCooldowns().get(type) + Cooldown.parseTime(overrides.getString(type+".Cooldown"))) {
+                        final Date now = Date.from(Instant.now());
+                        final Date lastTrade = Cooldown.parseTime(playerData.getTradingCooldowns().get(type));
+                        long cooldown = Cooldown.parseCooldown(local);
+                        if(lastTrade != null && (now.getTime()/1000L >= lastTrade.getTime()/1000L + cooldown)) {
                             playerData.getTradingCooldowns().remove(type);
                         } else {
                             maxUses = 0;
