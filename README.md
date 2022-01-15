@@ -2,72 +2,9 @@
 <h6>by PretzelJohn</h6>
 
 <h2>Description:</h2>
-<p>This Minecraft plugin limits the villager trade deals that players can get.</p>
-<p>Click <a href="https://www.spigotmc.org/resources/87210/">here</a> to see this plugin on Spigot.</p>
-<br>
-
-<h2>Commands:</h2>
-<table>
-    <tr>
-        <th>Command</th>
-        <th>Alias</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td><code>/villagertradelimiter</code></td>
-        <td><code>/vtl</code></td>
-        <td>Shows a help message</td>
-    </tr>
-    <tr>
-        <td><code>/villagertradelimiter reload</code></td>
-        <td><code>/vtl reload</code></td>
-        <td>Reloads config.yml</td>
-    </tr>
-    <tr>
-        <td><code>/villagertradelimiter see &lt;player&gt;</code></td>
-        <td><code>/vtl see &lt;player&gt;</code></td>
-        <td>Shows the trades for another player.<br/>To use, look at the villager you want<br/>to see the trades for.</td>
-    </tr>
-    <tr>
-        <td><code>/villagertradelimiter invsee</code></td>
-        <td><code>/vtl invsee</code></td>
-        <td>Shows the inventory of a villager. <br/>To use, look at the villager you want<br/>to see the trades for.</td>
-    </tr>
-</table><br>
-
-<h2>Permissions:</h2>
-<table>
-    <tr>
-        <th>Permission</th>
-        <th>Description</th>
-        <th>Default User(s)</th>
-    </tr>
-    <tr>
-        <td>villagertradelimiter.*</td>
-        <td>Allows players to use ALL commands</td>
-        <td>OP</td>
-    </tr>
-    <tr>
-        <td>villagertradelimiter.use</td>
-        <td>Allows players to use <code>/vtl</code></td>
-        <td>OP</td>
-    </tr>
-    <tr>
-        <td>villagertradelimiter.reload</td>
-        <td>Allows players to reload config.yml and messages.yml</td>
-        <td>OP</td>
-    </tr>
-    <tr>
-        <td>villagertradelimiter.see</td>
-        <td>Allows players to see the trades for another player<br/>with <code>/vtl see &lt;player&gt;</code></td>
-        <td>OP</td>
-    </tr>
-    <tr>
-        <td>villagertradelimiter.invsee</td>
-        <td>Allows players to see inventory of a villager<br/>with <code>/vtl invsee</code></td>
-        <td>OP</td>
-    </tr>
-</table><br>
+<p>This Minecraft plugin limits the villager trade deals that players can get.<br/>Click <a href="https://www.spigotmc.org/resources/87210/">here</a> to see this plugin on Spigot.</p>
+<p>Some information has moved to the <a href="https://github.com/PretzelJohn/VillagerTradeLimiter/wiki">Wiki</a>!</p>
+<br/>
 
 <h2>Config:</h2>
 <ul>
