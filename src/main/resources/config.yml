@@ -61,6 +61,12 @@ MaxUses: -1
 #   * w = weeks   (e.g. 2w)
 Cooldown: 0
 
+# The per-villager, per-trade cooldown in real-world time.
+# This is the same as Cooldown, but applies to a villager's restocking function
+#   * Set to 0 to disable this feature and keep vanilla behavior
+#   * Set to a number and interval to add a per-villager, per-trade cooldown for all trades (see below)
+Restock: 0
+
 
 #-------------------------------- PER-ITEM SETTINGS --------------------------------#
 # Override the global settings for individual items. To disable, set like this --> Overrides: none
@@ -91,4 +97,5 @@ Overrides:
   clock:
     MaxDemand: 12
   paper:
-    Disabled: true
+    MaxUses: 1
+    Restock: 1h

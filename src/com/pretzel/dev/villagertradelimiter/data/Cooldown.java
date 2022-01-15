@@ -39,10 +39,18 @@ public class Cooldown {
         return 0;
     }
 
+    /**
+     * @param date The date to format
+     * @return The date as a 'yyyy-MM-dd HH:mm:ss' formatted string
+     */
     public static String formatTime(Date date) {
         return FORMAT.format(date);
     }
 
+    /**
+     * @param timeStr The string to format, in 'yyyy-MM-dd HH:mm:ss' format
+     * @return The date that the string represents
+     */
     public static Date parseTime(final String timeStr) {
         try {
             return FORMAT.parse(timeStr);

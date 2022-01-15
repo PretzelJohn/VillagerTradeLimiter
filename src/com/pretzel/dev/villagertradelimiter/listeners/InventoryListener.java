@@ -79,13 +79,12 @@ public class InventoryListener implements Listener {
         if(overrides == null) return;
 
         final String type = settings.getType(result, ingredient1, ingredient2);
-        if(instance.getCfg().getString("Cooldown", "0").equals("0")) {
-            Util.consoleMsg("global cooldown is 0");
-            if(overrides.getString(type+".Cooldown", "0").equals("0")) {
-                Util.consoleMsg("local cooldown is 0");
-                return;
-            }
-        }
+        String cooldownStr = instance.getCfg().getString("Cooldown", "0");
+        cooldownStr = overrides.getString(type+".Cooldown", cooldownStr);
+        String restockStr = instance.getCfg().getString("Restock", "0");
+        restockStr = overrides.getString(type+".Restock", restockStr);
+
+        if(cooldownStr.equals("0") && restockStr.equals("0")) return;
 
         //Get the selected recipe by the items in the slots
         final MerchantRecipe selectedRecipe = getSelectedRecipe((Villager)event.getInventory().getHolder(), ingredient1, ingredient2, result);
@@ -96,11 +95,18 @@ public class InventoryListener implements Listener {
 
         //Add a cooldown to the trade if the player has reached the max uses
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
+        final PlayerData villagerData = instance.getPlayerData().get(((Villager)event.getInventory().getHolder()).getUniqueId());
         if(playerData == null || playerData.getTradingVillager() == null) return;
         Bukkit.getScheduler().runTaskLater(instance, () -> {
             int uses = selectedRecipe.getUses();
-            if(!playerData.getTradingCooldowns().containsKey(type) && uses >= selectedRecipe.getMaxUses()) {
-                playerData.getTradingCooldowns().put(type, Cooldown.formatTime(Date.from(Instant.now())));
+            final String time = Cooldown.formatTime(Date.from(Instant.now()));
+            if(uses >= selectedRecipe.getMaxUses()) {
+                if(!playerData.getTradingCooldowns().containsKey(type)) {
+                    playerData.getTradingCooldowns().put(type, time);
+                }
+                if(villagerData != null && !villagerData.getTradingCooldowns().containsKey(type)) {
+                    villagerData.getTradingCooldowns().put(type, time);
+                }
             }
         }, 1);
     }

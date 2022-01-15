@@ -67,6 +67,9 @@ public class PlayerListener implements Listener {
         if(!instance.getPlayerData().containsKey(player.getUniqueId())) {
             instance.getPlayerData().put(player.getUniqueId(), new PlayerData());
         }
+        if(!instance.getPlayerData().containsKey(villager.getUniqueId())) {
+            instance.getPlayerData().put(villager.getUniqueId(), new PlayerData());
+        }
         this.see(villager, player, player);
     }
 
@@ -143,6 +146,7 @@ public class PlayerListener implements Listener {
      * @return The total discount for the recipe, which is added to the base price to get the final price
      */
     private int getDiscount(final RecipeWrapper recipe, int totalReputation, double hotvDiscount) {
+        //Calculates the total discount
         int basePrice = getBasePrice(recipe);
         int demand = getDemand(recipe);
         float priceMultiplier = recipe.getPriceMultiplier();
@@ -150,10 +154,12 @@ public class PlayerListener implements Listener {
 
         double maxDiscount = settings.fetchDouble(recipe, "MaxDiscount", 0.3);
         if(maxDiscount >= 0.0 && maxDiscount <= 1.0) {
+            //Change the discount to the smaller MaxDiscount
             if(basePrice + discount < basePrice * (1.0 - maxDiscount)) {
                 discount = -(int)(basePrice * maxDiscount);
             }
         } else if(maxDiscount > 1.0) {
+            //Change the discount to the larger MaxDiscount
             //TODO: Allow for better fine-tuning
             discount = (int)(discount * maxDiscount);
         }
@@ -169,6 +175,7 @@ public class PlayerListener implements Listener {
         int maxUses = settings.fetchInt(recipe, "MaxUses", -1);
         boolean disabled = settings.fetchBoolean(recipe, "Disabled", false);
 
+        //Disables the trade if the player has an active cooldown for the trade
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
         if(playerData != null && playerData.getTradingVillager() != null) {
             final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
@@ -210,6 +217,7 @@ public class PlayerListener implements Listener {
         final PotionEffect effect = player.getPotionEffect(effectType);
         if(effect == null) return 0.0;
 
+        //Calculates the discount factor from the player's current effect level or the defined maximum
         int heroLevel = effect.getAmplifier()+1;
         final int maxHeroLevel = instance.getCfg().getInt("MaxHeroLevel", -1);
         if(maxHeroLevel == 0 || heroLevel == 0) return 0.0;

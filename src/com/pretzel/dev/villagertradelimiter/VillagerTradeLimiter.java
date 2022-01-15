@@ -5,6 +5,7 @@ import com.pretzel.dev.villagertradelimiter.commands.CommandBase;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.database.DatabaseManager;
 import com.pretzel.dev.villagertradelimiter.listeners.InventoryListener;
+import com.pretzel.dev.villagertradelimiter.listeners.VillagerListener;
 import com.pretzel.dev.villagertradelimiter.settings.ConfigUpdater;
 import com.pretzel.dev.villagertradelimiter.lib.Metrics;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
@@ -76,6 +77,7 @@ public class VillagerTradeLimiter extends JavaPlugin {
 
         //Load/reload database manager
         if(this.databaseManager == null) this.databaseManager = new DatabaseManager(this);
+        else onDisable();
         this.databaseManager.load();
     }
 
@@ -99,6 +101,7 @@ public class VillagerTradeLimiter extends JavaPlugin {
         this.playerListener = new PlayerListener(this, settings);
         this.getServer().getPluginManager().registerEvents(this.playerListener, this);
         this.getServer().getPluginManager().registerEvents(new InventoryListener(this, settings), this);
+        this.getServer().getPluginManager().registerEvents(new VillagerListener(this, settings), this);
     }
 
 

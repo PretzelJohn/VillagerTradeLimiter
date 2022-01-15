@@ -4,7 +4,9 @@ import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Villager;
 
 import java.time.Instant;
 import java.util.Date;
@@ -52,18 +54,20 @@ public class DatabaseManager {
                     if(date == null) continue;
                     long time = date.getTime();
 
-                    PlayerData playerData = instance.getPlayerData().get(uuid);
-                    if(playerData == null) {
-                        playerData = new PlayerData();
-                        instance.getPlayerData().put(uuid, playerData);
+                    PlayerData data = instance.getPlayerData().get(uuid);
+                    if(data == null) {
+                        data = new PlayerData();
+                        instance.getPlayerData().put(uuid, data);
                     }
 
+                    String key = (Bukkit.getEntity(uuid) instanceof Villager ? "Restock" : "Cooldown");
+                    String cooldownStr = instance.getCfg().getString(key, "0");
+                    cooldownStr = instance.getCfg().getString("Overrides."+item+"."+key, cooldownStr);
+                    long cooldown = Cooldown.parseCooldown(cooldownStr);
+
                     final Date now = Date.from(Instant.now());
-                    final String global = instance.getCfg().getString("Cooldown", "0");
-                    final String local = instance.getCfg().getString("Overrides."+item+".Cooldown", global);
-                    long cooldown = Cooldown.parseCooldown(local);
                     if(cooldown != 0 && now.getTime()/1000L < time/1000L + cooldown) {
-                        playerData.getTradingCooldowns().put(item, Cooldown.formatTime(date));
+                        data.getTradingCooldowns().put(item, Cooldown.formatTime(date));
                     }
                 }
             }
@@ -88,7 +92,7 @@ public class DatabaseManager {
 
         String values = "";
         for(String item : playerData.getTradingCooldowns().keySet()) {
-            String time = playerData.getTradingCooldowns().get(item);
+            final String time = playerData.getTradingCooldowns().get(item);
 
             if(!values.isEmpty()) values += ",";
             values += "('"+uuid+"','"+item+"','"+time+"')";
