@@ -168,6 +168,9 @@ public class Settings {
      * @return True if a recipe matches an override section, false otherwise
      */
     private boolean verify(final ItemStack buy, final ItemStack sell, final Material material) {
+        if(buy == null && sell == null) return false;
+        if(buy == null) return sell.getType() == material;
+        if(sell == null) return buy.getType() == material;
         return ((buy.getType() == material) || (sell.getType() == material));
     }
 }

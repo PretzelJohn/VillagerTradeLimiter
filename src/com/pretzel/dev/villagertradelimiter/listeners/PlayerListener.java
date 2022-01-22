@@ -234,7 +234,7 @@ public class PlayerListener implements Listener {
      */
     private void setIngredient(final ConfigurationSection item, final IngredientWrapper ingredient) {
         if(item == null) return;
-        ingredient.setMaterialId("minecraft:"+item.getString("Material", ingredient.getMaterialId()).replace("minecraft:",""));
+        ingredient.setMaterialId("minecraft:"+item.getString("Material", ingredient.getMaterialId()).toLowerCase().replace("minecraft:",""));
         ingredient.setAmount(item.getInt("Amount", ingredient.getAmount()));
     }
 }
