@@ -40,19 +40,20 @@ public class InventoryListener implements Listener {
     public void onPlayerStopTrading(final InventoryCloseEvent event) {
         //Don't do anything unless the player is actually finished trading with a villager
         if(event.getInventory().getType() != InventoryType.MERCHANT) return;
-        if(!(event.getInventory().getHolder() instanceof Villager)) return;
         if(!(event.getPlayer() instanceof Player)) return;
+        if(!(event.getInventory().getHolder() instanceof Villager)) return;
         final Player player = (Player)event.getPlayer();
-        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC((Villager)event.getInventory().getHolder())) return; //Skips NPCs
+        final Villager villager = (Villager)event.getInventory().getHolder();
+        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC(villager)) return; //Skips NPCs
 
         //Reset the villager's NBT data when a player is finished trading
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
         if(playerData == null) return;
 
-        final VillagerWrapper villager = playerData.getTradingVillager();
-        if(villager == null) return;
+        final VillagerWrapper villagerWrapper = playerData.getTradingVillager();
+        if(villagerWrapper == null) return;
         playerData.setTradingVillager(null);
-        villager.reset();
+        villagerWrapper.reset();
     }
 
     /** Handles when a player successfully trades with a villager */
@@ -63,7 +64,8 @@ public class InventoryListener implements Listener {
         if(!(event.getWhoClicked() instanceof Player)) return;
         if(event.getRawSlot() != 2) return;
         final Player player = (Player)event.getWhoClicked();
-        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC((Villager)event.getInventory().getHolder())) return; //Skips NPCs
+        final Villager villager = (Villager)event.getInventory().getHolder();
+        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC(villager)) return; //Skips NPCs
 
         //Get the items involved in the trade
         final ItemStack result = event.getCurrentItem();
@@ -86,7 +88,7 @@ public class InventoryListener implements Listener {
         if(cooldownStr.equals("0") && restockStr.equals("0")) return;
 
         //Get the selected recipe by the items in the slots
-        final MerchantRecipe selectedRecipe = getSelectedRecipe((Villager)event.getInventory().getHolder(), ingredient1, ingredient2, result);
+        final MerchantRecipe selectedRecipe = getSelectedRecipe(villager, ingredient1, ingredient2, result);
         if(selectedRecipe == null) {
             event.setCancelled(true);
             return;
@@ -94,7 +96,7 @@ public class InventoryListener implements Listener {
 
         //Add a cooldown to the trade if the player has reached the max uses
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
-        final PlayerData villagerData = instance.getPlayerData().get(((Villager)event.getInventory().getHolder()).getUniqueId());
+        final PlayerData villagerData = instance.getPlayerData().get(villager.getUniqueId());
         if(playerData == null || playerData.getTradingVillager() == null) return;
         Bukkit.getScheduler().runTaskLater(instance, () -> {
             int uses = selectedRecipe.getUses();

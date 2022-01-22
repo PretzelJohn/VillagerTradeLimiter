@@ -31,7 +31,9 @@ public class VillagerWrapper {
         final List<RecipeWrapper> recipes = new ArrayList<>();
 
         //Add the recipes from the villager's NBT data into a list of wrapped recipes
-        final NBTCompoundList nbtRecipes = entity.getCompound("Offers").getCompoundList("Recipes");
+        final NBTCompound offers = entity.getCompound("Offers");
+        if(offers == null) return recipes;
+        final NBTCompoundList nbtRecipes = offers.getCompoundList("Recipes");
         for(NBTCompound nbtRecipe : nbtRecipes) {
             recipes.add(new RecipeWrapper(nbtRecipe));
         }
