@@ -3,7 +3,6 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
-import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import com.pretzel.dev.villagertradelimiter.wrappers.*;
 import org.bukkit.OfflinePlayer;
@@ -37,8 +36,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerBeginTrading(final PlayerInteractEntityEvent event) {
         if(!(event.getRightClicked() instanceof Villager)) return;
+        final Player player = event.getPlayer();
         final Villager villager = (Villager)event.getRightClicked();
-        if(Util.isNPC(villager)) return; //Skips NPCs
+        if(settings.shouldSkipNPC(event.getPlayer()) || settings.shouldSkipNPC(villager)) return; //Skips NPCs
         if(villager.getProfession() == Villager.Profession.NONE || villager.getProfession() == Villager.Profession.NITWIT) return; //Skips non-trading villagers
         if(villager.getRecipeCount() == 0) return; //Skips non-trading villagers
 
@@ -63,13 +63,13 @@ public class PlayerListener implements Listener {
 
         //Cancel the original event, and open the adjusted trade view
         event.setCancelled(true);
-        final Player player = event.getPlayer();
         if(!instance.getPlayerData().containsKey(player.getUniqueId())) {
             instance.getPlayerData().put(player.getUniqueId(), new PlayerData());
         }
         if(!instance.getPlayerData().containsKey(villager.getUniqueId())) {
             instance.getPlayerData().put(villager.getUniqueId(), new PlayerData());
         }
+
         this.see(villager, player, player);
     }
 
@@ -83,7 +83,8 @@ public class PlayerListener implements Listener {
         //Wraps the villager and player into wrapper classes
         final VillagerWrapper villagerWrapper = new VillagerWrapper(villager);
         final PlayerWrapper otherWrapper = new PlayerWrapper(other);
-        if(Util.isNPC(villager) || Util.isNPC(player) || otherWrapper.isNPC()) return; //Skips NPCs
+        final Player otherPlayer = otherWrapper.getPlayer();
+        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC(villager) || otherPlayer == null || settings.shouldSkipNPC(otherPlayer)) return; //Skips NPCs
 
         final PlayerData playerData = instance.getPlayerData().get(other.getUniqueId());
         if(playerData != null) playerData.setTradingVillager(villagerWrapper);

@@ -3,7 +3,6 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
-import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -33,7 +32,8 @@ public class VillagerListener implements Listener {
     @EventHandler
     public void onVillagerRestock(final VillagerReplenishTradeEvent event) {
         if(!(event.getEntity() instanceof Villager)) return;
-        if(Util.isNPC((Villager) event.getEntity())) return;
+        final Villager villager = (Villager)event.getEntity();
+        if(settings.shouldSkipNPC(villager)) return; //Skips NPCs
 
         //Get the items involved in the restock
         final MerchantRecipe recipe = event.getRecipe();
@@ -43,7 +43,7 @@ public class VillagerListener implements Listener {
         final String type = settings.getType(result, ingredient1, ingredient2);
 
         //Get the villager's data container
-        final UUID uuid = event.getEntity().getUniqueId();
+        final UUID uuid = villager.getUniqueId();
         final PlayerData villagerData = instance.getPlayerData().get(uuid);
         if(villagerData == null) return;
 

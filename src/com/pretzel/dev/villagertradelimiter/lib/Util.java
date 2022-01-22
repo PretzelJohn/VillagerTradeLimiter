@@ -8,8 +8,8 @@ import java.io.FileWriter;
 import java.io.Reader;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -66,21 +66,21 @@ public class Util {
     }
 
     /**
-     * Checks whether a player is a Citizens NPC or not
-     * @param player The player to check
-     * @return True if the player is an NPC, false otherwise
+     * Checks whether an entity is a Citizens NPC or not
+     * @param entity The entity to check
+     * @return True if the entity is an NPC, false otherwise
      */
-    public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC");
+    public static boolean isNPC(Entity entity) {
+        return entity.hasMetadata("NPC");
     }
 
     /**
-     * Returns whether a villager is a Citizens NPC or not
-     * @param villager The villager to check
-     * @return True if the villager is an NPC, false otherwise
+     * Returns whether an entity is a shopkeeper NPC or not
+     * @param entity The villager to check
+     * @return True if the villager is a shopkeeper, false otherwise
      */
-    public static boolean isNPC(Villager villager) {
-        return villager.hasMetadata("NPC");
+    public static boolean isShopkeeper(Entity entity) {
+        return entity.hasMetadata("shopkeeper");
     }
 
     /**

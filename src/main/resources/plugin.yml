@@ -1,7 +1,7 @@
 name: VillagerTradeLimiter
 author: PretzelJohn
 main: com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter
-version: 1.5.0
+version: 1.5.1
 api-version: 1.14
 
 commands:

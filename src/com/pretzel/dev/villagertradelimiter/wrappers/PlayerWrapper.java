@@ -12,9 +12,6 @@ public class PlayerWrapper {
     /** @param player The offline player that this wrapper wraps */
     public PlayerWrapper(final OfflinePlayer player) { this.player = player; }
 
-    /** @return Whether this player is an NPC or not */
-    public boolean isNPC() { return (player.isOnline() && Util.isNPC((Player)player)); }
-
     /**
      * @param isOld Whether the server is older than 1.16 or not. Minecraft changed how UUID's are represented in 1.16
      * @return A string representation of the player's UUID, for use when matching the player's UUID to a gossip's target UUID

@@ -19,6 +19,10 @@ database:
   encoding: utf8
   useSSL: false
 
+# Ignore Citizens NPCs, and/or Shopkeepers NPCs if true
+IgnoreCitizens: true
+IgnoreShopkeepers: true
+
 # Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
 DisableTrading:
 - world_nether

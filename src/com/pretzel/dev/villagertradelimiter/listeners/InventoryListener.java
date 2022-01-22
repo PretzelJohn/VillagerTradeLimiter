@@ -3,7 +3,6 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
-import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import com.pretzel.dev.villagertradelimiter.wrappers.VillagerWrapper;
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class InventoryListener implements Listener {
         if(!(event.getInventory().getHolder() instanceof Villager)) return;
         if(!(event.getPlayer() instanceof Player)) return;
         final Player player = (Player)event.getPlayer();
-        if(Util.isNPC(player)) return;
+        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC((Villager)event.getInventory().getHolder())) return; //Skips NPCs
 
         //Reset the villager's NBT data when a player is finished trading
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
@@ -64,7 +63,7 @@ public class InventoryListener implements Listener {
         if(!(event.getWhoClicked() instanceof Player)) return;
         if(event.getRawSlot() != 2) return;
         final Player player = (Player)event.getWhoClicked();
-        if(Util.isNPC(player)) return;
+        if(settings.shouldSkipNPC(player) || settings.shouldSkipNPC((Villager)event.getInventory().getHolder())) return; //Skips NPCs
 
         //Get the items involved in the trade
         final ItemStack result = event.getCurrentItem();

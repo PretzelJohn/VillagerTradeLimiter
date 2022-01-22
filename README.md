@@ -52,6 +52,14 @@
                 <td>If your MySQL database can use SSL connections, set this to <code>true</code>!</td>
             </tr>
             <tr>
+                <td><code>IgnoreCitizens:</code></td>
+                <td>Whether to ignore Citizens NPCs from the Citizens plugin. If set to true, Citizens NPCs won't be affected by this plugin.</td>
+            </tr>
+            <tr>
+                <td><code>IgnoreShopkeepers:</code></td>
+                <td>Whether to ignore Shopkeepers NPCs from the Shopkeepers plugin. If set to true, Shopkeepers NPCs won't be affected by this plugin.</td>
+            </tr>
+            <tr>
                 <td><code>DisableTrading:</code></td>
                 <td>Whether to disable all villager trading for all worlds, some worlds, or no worlds.<br/><strong>Options:</strong>
                     <ul>

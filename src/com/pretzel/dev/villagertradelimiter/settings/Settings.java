@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -16,6 +17,16 @@ public class Settings {
 
     /** @param instance The instance of VillagerTradeLimiter.java */
     public Settings(final VillagerTradeLimiter instance) { this.instance = instance; }
+
+    /**
+     * @param entity The entity to check the NPC status of
+     * @return True if the entity is an NPC and config is set to ignore NPCs
+     */
+    public boolean shouldSkipNPC(final Entity entity) {
+        if(entity == null) return true;
+        if(instance.getCfg().getBoolean("IgnoreCitizens", true) && Util.isNPC(entity)) return true;
+        return instance.getCfg().getBoolean("IgnoreShopkeepers", true) && Util.isShopkeeper(entity);
+    }
 
     /**
      * @param recipe The wrapped recipe to fetch any overrides for
