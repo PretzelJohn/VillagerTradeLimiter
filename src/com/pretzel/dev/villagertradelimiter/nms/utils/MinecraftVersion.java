@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
  * This class acts as the "Brain" of the NBTApi. It contains the main logger for
  * other classes,registers bStats and checks rather Maven shading was done
  * correctly.
- * 
+ *
  * @author tr7zw
  *
  */
@@ -17,7 +17,7 @@ import org.bukkit.Bukkit;
 public enum MinecraftVersion {
 	UNKNOWN(Integer.MAX_VALUE), // Use the newest known mappings
 	MC1_7_R4(174), MC1_8_R3(183), MC1_9_R1(191), MC1_9_R2(192), MC1_10_R1(1101), MC1_11_R1(1111), MC1_12_R1(1121),
-	MC1_13_R1(1131), MC1_13_R2(1132), MC1_14_R1(1141), MC1_15_R1(1151), MC1_16_R1(1161), MC1_16_R2(1162), MC1_16_R3(1163), MC1_17_R1(1171), MC1_18_R1(1181, true);
+	MC1_13_R1(1131), MC1_13_R2(1132), MC1_14_R1(1141), MC1_15_R1(1151), MC1_16_R1(1161), MC1_16_R2(1162), MC1_16_R3(1163), MC1_17_R1(1171), MC1_18_R1(1181, true), MC1_18_R2(1182, true);
 
 	private static MinecraftVersion version;
 	private static Boolean hasGsonSupport;
@@ -30,15 +30,15 @@ public enum MinecraftVersion {
 	private static Logger logger = Logger.getLogger("NBTAPI");
 
 	// NBT-API Version
-	protected static final String VERSION = "2.9.0-SNAPSHOT";
+	protected static final String VERSION = "2.9.2";
 
 	private final int versionId;
 	private final boolean mojangMapping;
 
-   MinecraftVersion(int versionId) {
-        this(versionId, false);
-    }
-	
+	MinecraftVersion(int versionId) {
+		this(versionId, false);
+	}
+
 	MinecraftVersion(int versionId, boolean mojangMapping) {
 		this.versionId = versionId;
 		this.mojangMapping = mojangMapping;
@@ -55,29 +55,34 @@ public enum MinecraftVersion {
 	 * @return True if method names are in Mojang format and need to be remapped internally
 	 */
 	public boolean isMojangMapping() {
-        return mojangMapping;
-    }
-	
-	public String getPackageName() {
-	    if(this == UNKNOWN) {
-	        return values()[values().length-1].name().replace("MC", "v");
-	    }
-	    return this.name().replace("MC", "v");
+		return mojangMapping;
 	}
 
-    /**
+	/**
+	 * This method is required to hot-wire the plugin during mappings generation for newer mc versions thanks to md_5 not used mojmap.
+	 *
+	 * @return
+	 */
+	public String getPackageName() {
+		if(this == UNKNOWN) {
+			return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		}
+		return this.name().replace("MC", "v");
+	}
+
+	/**
 	 * Returns true if the current versions is at least the given Version
-	 * 
+	 *
 	 * @param version The minimum version
 	 * @return
 	 */
 	public static boolean isAtLeastVersion(MinecraftVersion version) {
 		return getVersion().getVersionId() >= version.getVersionId();
 	}
-	
+
 	/**
 	 * Returns true if the current versions newer (not equal) than the given version
-	 * 
+	 *
 	 * @param version The minimum version
 	 * @return
 	 */
@@ -88,7 +93,7 @@ public enum MinecraftVersion {
 	/**
 	 * Getter for this servers MinecraftVersion. Also init's bStats and checks the
 	 * shading.
-	 * 
+	 *
 	 * @return The enum for the MinecraftVersion this server is running
 	 */
 	public static MinecraftVersion getVersion() {
@@ -105,19 +110,26 @@ public enum MinecraftVersion {
 		if (version != UNKNOWN) {
 			logger.info("[NBTAPI] NMS support '" + version.name() + "' loaded!");
 		} else {
-			logger.warning("[NBTAPI] Wasn't able to find NMS Support! Some functions may not work!");
+			logger.warning("[NBTAPI] This Server-Version(" + ver + ") is not supported by this NBT-API Version(" + VERSION + ") located at " + MinecraftVersion.class.getName() + ". The NBT-API will try to work as good as it can! Some functions may not work!");
 		}
 		init();
 		return version;
 	}
 
 	private static void init() {
+		try {
+			if (hasGsonSupport() && !bStatsDisabled)
+				new ApiMetricsLite();
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "[NBTAPI] Error enabling Metrics!", ex);
+		}
+
 		if (hasGsonSupport() && !updateCheckDisabled)
 			new Thread(() -> {
 				try {
 					VersionChecker.checkForUpdates();
 				} catch (Exception ex) {
-					logger.log(Level.WARNING, "[NBTAPI] Error while checking for updates!", ex);
+					logger.log(Level.WARNING, "[NBTAPI] Error while checking for updates! Error: " + ex.getMessage());
 				}
 			}).start();
 		// Maven's Relocate is clever and changes strings, too. So we have to use this
@@ -182,17 +194,17 @@ public enum MinecraftVersion {
 	public static void disablePackageWarning() {
 		disablePackageWarning = true;
 	}
-	
+
 	/**
 	 * @return Logger used by the NBT-API
 	 */
 	public static Logger getLogger() {
 		return logger;
 	}
-	
+
 	/**
 	 * Replaces the NBT-API logger with a custom implementation.
-	 * 
+	 *
 	 * @param logger The new logger(can not be null!)
 	 */
 	public static void replaceLogger(Logger logger) {

@@ -9,8 +9,8 @@ import com.pretzel.dev.villagertradelimiter.nms.utils.nmsmappings.ReflectionMeth
 public class NBTPersistentDataContainer extends NBTCompound {
 
 	private final PersistentDataContainer container;
-	
-	protected NBTPersistentDataContainer(PersistentDataContainer container) {
+
+	public NBTPersistentDataContainer(PersistentDataContainer container) {
 		super(null, null);
 		this.container = container;
 	}
@@ -27,5 +27,5 @@ public class NBTPersistentDataContainer extends NBTCompound {
 		map.clear();
 		ReflectionMethod.CRAFT_PERSISTENT_DATA_CONTAINER_PUT_ALL.run(container, compound);
 	}
-	
+
 }

@@ -1,13 +1,11 @@
 package com.pretzel.dev.villagertradelimiter.nms;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -22,7 +20,7 @@ import com.pretzel.dev.villagertradelimiter.nms.utils.nmsmappings.ReflectionMeth
 /**
  * Utility class for translating NBTApi calls to reflections into NMS code All
  * methods are allowed to throw {@link NbtApiException}
- * 
+ *
  * @author tr7zw
  *
  */
@@ -35,7 +33,7 @@ public class NBTReflectionUtil {
 			field_unhandledTags = ClassWrapper.CRAFT_METAITEM.getClazz().getDeclaredField("unhandledTags");
 			field_unhandledTags.setAccessible(true);
 		} catch (NoSuchFieldException e) {
-			
+
 		}
 	}
 
@@ -48,7 +46,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets the NMS Entity for a given Bukkit Entity
-	 * 
+	 *
 	 * @param entity Bukkit Entity
 	 * @return NMS Entity
 	 */
@@ -62,7 +60,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Reads in a InputStream as NMS Compound
-	 * 
+	 *
 	 * @param stream InputStream of any NBT file
 	 * @return NMS Compound
 	 */
@@ -70,13 +68,16 @@ public class NBTReflectionUtil {
 		try {
 			return ReflectionMethod.NBTFILE_READ.run(null, stream);
 		} catch (Exception e) {
+			try {
+				stream.close();
+			}catch(IOException ignore) {}
 			throw new NbtApiException("Exception while reading a NBT File!", e);
 		}
 	}
 
 	/**
 	 * Writes a NMS Compound to an OutputStream
-	 * 
+	 *
 	 * @param nbt    NMS Compound
 	 * @param stream Stream to write to
 	 * @return ???
@@ -88,10 +89,10 @@ public class NBTReflectionUtil {
 			throw new NbtApiException("Exception while writing NBT!", e);
 		}
 	}
-	
+
 	/**
 	 * Writes a Compound to an OutputStream
-	 * 
+	 *
 	 * @param comp Compound
 	 * @param stream Stream to write to
 	 */
@@ -113,7 +114,7 @@ public class NBTReflectionUtil {
 	/**
 	 * Simulates getOrCreateTag. If an Item doesn't yet have a Tag, it will return a
 	 * new empty tag.
-	 * 
+	 *
 	 * @param nmsitem
 	 * @return NMS Compound
 	 */
@@ -128,7 +129,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Converts {@link NBTCompound} to NMS ItemStacks
-	 * 
+	 *
 	 * @param nbtcompound Any valid {@link NBTCompound}
 	 * @return NMS ItemStack
 	 */
@@ -147,7 +148,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Converts NMS ItemStacks to {@link NBTContainer}
-	 * 
+	 *
 	 * @param nmsitem NMS ItemStack
 	 * @return {@link NBTContainer} with all the data
 	 */
@@ -177,7 +178,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets the Vanilla NBT Compound from a given NMS Entity
-	 * 
+	 *
 	 * @param nmsEntity
 	 * @return NMS NBT Compound
 	 */
@@ -195,7 +196,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Loads all Vanilla tags from a NMS Compound into a NMS Entity
-	 * 
+	 *
 	 * @param nbtTag
 	 * @param nmsEntity
 	 * @return The NMS Entity
@@ -211,7 +212,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets the NMS Compound from a given TileEntity
-	 * 
+	 *
 	 * @param tile
 	 * @return NMS Compound with the Vanilla data
 	 */
@@ -226,16 +227,16 @@ public class NBTReflectionUtil {
 				Object pos = ObjectCreator.NMS_BLOCKPOSITION.getInstance(tile.getX(), tile.getY(), tile.getZ());
 				o = ReflectionMethod.NMS_WORLD_GET_TILEENTITY.run(nmsworld, pos);
 			}
-			
+
 			Object answer = null;
 			if(MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_18_R1)) {
-			    answer = ReflectionMethod.TILEENTITY_GET_NBT_1181.run(o);
+				answer = ReflectionMethod.TILEENTITY_GET_NBT_1181.run(o);
 			} else {
-			    answer = ClassWrapper.NMS_NBTTAGCOMPOUND.getClazz().newInstance();
-			    ReflectionMethod.TILEENTITY_GET_NBT.run(o, answer);
+				answer = ClassWrapper.NMS_NBTTAGCOMPOUND.getClazz().newInstance();
+				ReflectionMethod.TILEENTITY_GET_NBT.run(o, answer);
 			}
 			if (answer == null) {
-			    throw new NbtApiException("Unable to get NBTCompound from TileEntity! " + tile + " " + o);
+				throw new NbtApiException("Unable to get NBTCompound from TileEntity! " + tile + " " + o);
 			}
 			return answer;
 		} catch (Exception e) {
@@ -245,7 +246,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Sets Vanilla tags from a NMS Compound to a TileEntity
-	 * 
+	 *
 	 * @param tile
 	 * @param comp
 	 */
@@ -261,7 +262,7 @@ public class NBTReflectionUtil {
 				o = ReflectionMethod.NMS_WORLD_GET_TILEENTITY.run(nmsworld, pos);
 			}
 			if(MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_17_R1)) {
-			    ReflectionMethod.TILEENTITY_SET_NBT.run(o, comp);
+				ReflectionMethod.TILEENTITY_SET_NBT.run(o, comp);
 			}else if(MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_16_R1)) {
 				Object blockData = ReflectionMethod.TILEENTITY_GET_BLOCKDATA.run(o);
 				ReflectionMethod.TILEENTITY_SET_NBT_LEGACY1161.run(o, blockData, comp);
@@ -275,7 +276,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets the subCompound with a given name from a NMS Compound
-	 * 
+	 *
 	 * @param compound
 	 * @param name
 	 * @return NMS Compound or null
@@ -294,7 +295,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Creates a subCompound with a given name in the given NMS Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param name
 	 */
@@ -322,7 +323,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Checks if the Compound is correctly linked to it's roots
-	 * 
+	 *
 	 * @param comp
 	 * @return true if this is a valide Compound, else false
 	 */
@@ -352,7 +353,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Merges the second {@link NBTCompound} into the first one
-	 * 
+	 *
 	 * @param comp           Target for the merge
 	 * @param nbtcompoundSrc Data to merge
 	 */
@@ -381,7 +382,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Returns the content for a given key inside a Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @return Content saved under this key
@@ -403,7 +404,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Sets a key in a {@link NBTCompound} to a given value
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @param val
@@ -431,7 +432,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Returns the List saved with a given key.
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @param type
@@ -461,6 +462,10 @@ public class NBTReflectionUtil {
 				return (NBTList<T>) new NBTDoubleList(comp, key, type, nbt);
 			} else if (clazz == Long.class) {
 				return (NBTList<T>) new NBTLongList(comp, key, type, nbt);
+			} else if (clazz == int[].class) {
+				return (NBTList<T>) new NBTIntArrayList(comp, key, type, nbt);
+			} else if (clazz == UUID.class) {
+				return (NBTList<T>) new NBTUUIDList(comp, key, type, nbt);
 			} else {
 				return null;
 			}
@@ -468,7 +473,7 @@ public class NBTReflectionUtil {
 			throw new NbtApiException("Exception while getting a list with the type '" + type + "'!", ex);
 		}
 	}
-	
+
 	public static NBTType getListType(NBTCompound comp, String key) {
 		Object rootnbttag = comp.getCompound();
 		if (rootnbttag == null) {
@@ -481,7 +486,7 @@ public class NBTReflectionUtil {
 			Object nbt = ReflectionMethod.COMPOUND_GET.run(workingtag, key);
 			String fieldname = "type";
 			if(MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_17_R1)) {
-			    fieldname = "w";
+				fieldname = "w";
 			}
 			Field f = nbt.getClass().getDeclaredField(fieldname);
 			f.setAccessible(true);
@@ -490,7 +495,7 @@ public class NBTReflectionUtil {
 			throw new NbtApiException("Exception while getting the list type!", ex);
 		}
 	}
-	
+
 	public static Object getEntry(NBTCompound comp, String key) {
 		Object rootnbttag = comp.getCompound();
 		if (rootnbttag == null) {
@@ -509,7 +514,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Uses Gson to set a {@link Serializable} value in a Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @param value
@@ -527,7 +532,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Uses Gson to load back a {@link Serializable} object from the Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 * @param type
@@ -545,7 +550,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Deletes the given key
-	 * 
+	 *
 	 * @param comp
 	 * @param key
 	 */
@@ -563,7 +568,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets the Keyset inside this Compound
-	 * 
+	 *
 	 * @param comp
 	 * @return Set of all keys
 	 */
@@ -581,7 +586,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Sets data inside the Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param type
 	 * @param key
@@ -605,7 +610,7 @@ public class NBTReflectionUtil {
 
 	/**
 	 * Gets data from the Compound
-	 * 
+	 *
 	 * @param comp
 	 * @param type
 	 * @param key

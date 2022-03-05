@@ -8,7 +8,7 @@ import com.pretzel.dev.villagertradelimiter.nms.utils.MinecraftVersion;
 
 /**
  * Wraps NMS and CRAFT classes
- * 
+ *
  * @author tr7zw
  *
  */
@@ -23,6 +23,7 @@ public enum ClassWrapper {
     NMS_NBTBASE(PackageWrapper.NMS, "NBTBase", null, null, "net.minecraft.nbt", "net.minecraft.nbt.Tag"),
     NMS_NBTTAGSTRING(PackageWrapper.NMS, "NBTTagString", null, null, "net.minecraft.nbt", "net.minecraft.nbt.StringTag"),
     NMS_NBTTAGINT(PackageWrapper.NMS, "NBTTagInt", null, null, "net.minecraft.nbt", "net.minecraft.nbt.IntTag"),
+    NMS_NBTTAGINTARRAY(PackageWrapper.NMS, "NBTTagIntArray", null, null, "net.minecraft.nbt", "net.minecraft.nbt.IntArrayTag"),
     NMS_NBTTAGFLOAT(PackageWrapper.NMS, "NBTTagFloat", null, null, "net.minecraft.nbt", "net.minecraft.nbt.FloatTag"),
     NMS_NBTTAGDOUBLE(PackageWrapper.NMS, "NBTTagDouble", null, null, "net.minecraft.nbt", "net.minecraft.nbt.DoubleTag"),
     NMS_NBTTAGLONG(PackageWrapper.NMS, "NBTTagLong", null, null, "net.minecraft.nbt", "net.minecraft.nbt.LongTag"),
@@ -56,7 +57,7 @@ public enum ClassWrapper {
     }
 
     ClassWrapper(PackageWrapper packageId, String clazzName, MinecraftVersion from, MinecraftVersion to,
-            String mojangMap, String mojangName) {
+                 String mojangMap, String mojangName) {
         this.mojangName = mojangName;
         if (from != null && MinecraftVersion.getVersion().getVersionId() < from.getVersionId()) {
             return;
