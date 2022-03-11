@@ -15,6 +15,7 @@ import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -117,4 +118,7 @@ public class VillagerTradeLimiter extends JavaPlugin {
 
     /** Returns a player's data container */
     public HashMap<UUID, PlayerData> getPlayerData() { return this.playerData; }
+
+    /** Returns the invsee inventory's barrier block */
+    public ItemStack getBarrier() { return this.commandManager.getBarrier(); }
 }

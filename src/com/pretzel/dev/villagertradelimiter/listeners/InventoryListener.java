@@ -35,6 +35,23 @@ public class InventoryListener implements Listener {
         this.settings = settings;
     }
 
+    /** Handles when a player clicks in an inventory window */
+    @EventHandler
+    public void onPlayerClickInventory(final InventoryClickEvent event) {
+        if(event.getInventory().getType() != InventoryType.CHEST) return;
+        if(event.getInventory().getSize() != 9) return;
+        if(!(event.getWhoClicked() instanceof Player)) return;
+        if(settings.shouldSkipNPC(event.getWhoClicked())) return; //Skips NPCs
+        ItemStack barrier = event.getInventory().getItem(8);
+        if(barrier == null || !barrier.isSimilar(instance.getBarrier())) return;
+
+        //If the inventory matches the invsee inventory, cancel click events
+        event.setCancelled(true);
+        if(event.getCurrentItem() != null && event.getCurrentItem().isSimilar(instance.getBarrier())) {
+            Bukkit.getScheduler().runTaskLater(instance, () -> event.getWhoClicked().closeInventory(), 0L);
+        }
+    }
+
     /** Handles when a player stops trading with a villager */
     @EventHandler
     public void onPlayerStopTrading(final InventoryCloseEvent event) {

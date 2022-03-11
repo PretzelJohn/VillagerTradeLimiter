@@ -19,10 +19,18 @@ import java.util.Arrays;
 
 public class CommandManager {
     private final VillagerTradeLimiter instance;
+    private final ItemStack barrier;
 
     /** @param instance The instance of VillagerTradeLimiter.java */
     public CommandManager(final VillagerTradeLimiter instance) {
         this.instance = instance;
+        this.barrier = new ItemStack(Material.BARRIER, 1);
+        ItemMeta meta = barrier.getItemMeta();
+        if(meta != null) {
+            meta.setDisplayName(ChatColor.RED+"Close");
+            meta.setLore(Arrays.asList(ChatColor.GRAY+"Click to close", ChatColor.GRAY+"this inventory."));
+        }
+        barrier.setItemMeta(meta);
     }
 
     /** @return The root command node, to be registered by the plugin */
@@ -53,10 +61,7 @@ public class CommandManager {
 
             //Get the closest villager. If a nearby villager wasn't found, send the player an error message
             Entity closestEntity = getClosestEntity(p);
-            if(closestEntity == null) {
-                Util.sendMsg(instance.getLang("see.novillager"), p);
-                return;
-            }
+            if(closestEntity == null) return;
 
             //Gets the other player by name, using the first argument of the command
             OfflinePlayer otherPlayer = Bukkit.getOfflinePlayer(args[0]);
@@ -80,10 +85,7 @@ public class CommandManager {
 
             //Get the closest villager. If a nearby villager wasn't found, send the player an error message
             Entity closestEntity = getClosestEntity(p);
-            if(closestEntity == null) {
-                Util.sendMsg(instance.getLang("see.novillager"), p);
-                return;
-            }
+            if(closestEntity == null) return;
 
             //Open the villager's inventory view for the calling player
             final Villager closestVillager = (Villager)closestEntity;
@@ -92,7 +94,7 @@ public class CommandManager {
                 if(item == null) continue;
                 inventory.addItem(item.clone());
             }
-            inventory.setItem(8, getBarrier());
+            inventory.setItem(8, barrier);
             p.openInventory(inventory);
         }));
         return cmd;
@@ -117,6 +119,9 @@ public class CommandManager {
                 }
             }
         }
+        if(closestEntity == null) {
+            Util.sendMsg(instance.getLang("see.novillager"), player);
+        }
         return closestEntity;
     }
 
@@ -140,15 +145,8 @@ public class CommandManager {
         }
     }
 
-    /** @return A custom barrier block to show players villagers only have 8 inventory slots */
-    private ItemStack getBarrier() {
-        ItemStack barrier =  new ItemStack(Material.BARRIER, 1);
-        ItemMeta meta = barrier.getItemMeta();
-        if(meta != null) {
-            meta.setDisplayName(ChatColor.RED+"N/A");
-            meta.setLore(Arrays.asList(ChatColor.GRAY+"Villagers only have", ChatColor.GRAY+"8 inventory slots!"));
-        }
-        barrier.setItemMeta(meta);
-        return barrier;
+    /** @return The barrier item */
+    public ItemStack getBarrier() {
+        return this.barrier;
     }
 }
