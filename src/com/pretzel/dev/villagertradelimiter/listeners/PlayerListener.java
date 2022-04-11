@@ -5,6 +5,7 @@ import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import com.pretzel.dev.villagertradelimiter.wrappers.*;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -35,12 +37,22 @@ public class PlayerListener implements Listener {
     /** Handles when a player begins trading with a villager */
     @EventHandler
     public void onPlayerBeginTrading(final PlayerInteractEntityEvent event) {
-        if(!(event.getRightClicked() instanceof Villager)) return;
+        if(event.isCancelled()) return; //Skips when event is already cancelled
+        if(!(event.getRightClicked() instanceof Villager)) return; //Skips non-villager entities
+
         final Player player = event.getPlayer();
         final Villager villager = (Villager)event.getRightClicked();
+
+        //Skips when player is holding an ignored item
+        Material heldItemType = player.getInventory().getItem(event.getHand()).getType();
+        for(String ignoredType : instance.getCfg().getStringList("IgnoredHeldItems")) {
+            if(heldItemType.equals(Material.matchMaterial(ignoredType))) {
+                event.setCancelled(true);
+                return;
+            }
+        }
         if(settings.shouldSkipNPC(event.getPlayer()) || settings.shouldSkipNPC(villager)) return; //Skips NPCs
-        if(villager.getProfession() == Villager.Profession.NONE || villager.getProfession() == Villager.Profession.NITWIT) return; //Skips non-trading villagers
-        if(villager.getRecipeCount() == 0) return; //Skips non-trading villagers
+        if(villager.getProfession() == Villager.Profession.NONE || villager.getProfession() == Villager.Profession.NITWIT || villager.getRecipeCount() == 0) return; //Skips non-trading villagers
 
         //DisableTrading feature
         if(instance.getCfg().isBoolean("DisableTrading")) {

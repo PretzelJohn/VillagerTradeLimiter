@@ -2,7 +2,7 @@
 <h6>by PretzelJohn</h6>
 
 <h2>Description:</h2>
-<p>This Minecraft plugin limits the villager trade deals that players can get.<br/>Click <a href="https://www.spigotmc.org/resources/87210/">here</a> to see this plugin on Spigot.</p>
+<p>This Minecraft plugin limits the villager trade deals that players can get.<br/>Supports Spigot, Paper, and Purpur servers from 1.14.1 to the current version.<br/>Click <a href="https://www.spigotmc.org/resources/87210/">here</a> to see this plugin on Spigot.</p>
 <p>Some information has moved to the <a href="https://github.com/PretzelJohn/VillagerTradeLimiter/wiki">Wiki</a>!</p>
 <br/>
 
@@ -60,6 +60,15 @@
                 <td>Whether to ignore Shopkeepers NPCs from the Shopkeepers plugin. If set to true, Shopkeepers NPCs won't be affected by this plugin.</td>
             </tr>
             <tr>
+                <td><code>IgnoreHeldItems:</code></td>
+                <td>A list of item types where, when the player interacts with a villager while holding one of these items, VTL doesn't affect the interaction. This is used for compatibility with other plugins, like the custom spawn eggs in <a href="https://www.spigotmc.org/resources/%E2%9C%85-safarinet-premium-mob-catcher-plugin.9732/">SafariNet</a>.<br><b>Options:</b>
+                    <ul>
+                        <li>Add material names for special items used by other plugins</li>
+                        <li>Remove all list items and set to [] to disable this feature</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
                 <td><code>DisableTrading:</code></td>
                 <td>Whether to disable all villager trading for all worlds, some worlds, or no worlds.<br/><strong>Options:</strong>
                     <ul>
@@ -110,7 +119,7 @@
         </table>
     </li>
     <li>
-        <p>Per-item settings: (<code>Overrides:</code>)</p>
+        <p>Per-item override settings: (<code>Overrides:</code>)</p>
         <table>
             <tr>
                 <th>Setting</th>
@@ -138,19 +147,19 @@
             </tr>
             <tr>
                 <td><code>.Cooldown:</code></td>
-                <td>Sets the time between restocks for the trade, and applies to ALL villagers. Once the player reaches the <code>MaxUses</code>, the cooldown begins. The trade is disabled for all villagers until the cooldown expires.<br><strong>FORMAT:</strong> &lt;Number&gt;&lt;interval&gt;<br><strong>EXAMPLE:</strong> 30s = 30 seconds, 5m = 5 minutes, 4h = 4 hours, 7d = 7 days</td>
+                <td>Sets the time between restocks for the trade, and applies to ALL villagers. Once the player reaches the <code>MaxUses</code>, the cooldown begins. The trade is disabled for all villagers until the cooldown expires.<br><strong>Format:</strong> &lt;Number&gt;&lt;interval&gt;<br><strong>Examples:</strong> 30s = 30 seconds, 5m = 5 minutes, 4h = 4 hours, 7d = 7 days</td>
             </tr>
             <tr>
                 <td><code>.Item1.Material:</code><br><code>.Item2.Material:</code><br><code>.Result.Material:</code></td>
-                <td>Sets the material of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
+                <td>Sets the material of the 1st, 2nd, or result item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
             <tr>
                 <td><code>.Item1.Amount:</code><br><code>.Item2.Amount:</code><br><code>.Result.Amount:</code></td>
-                <td>Sets the amount of the 1st or 2nd item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
+                <td>Sets the amount of the 1st, 2nd, or result item in the trade<br><strong>WARNING:</strong> This cannot be undone!</td>
             </tr>
         </table>
     </li>
     <li>
-        <p>For the default config.yml, see: <code>src/main/resources/config.yml</code></p>
+        <p>For the default config.yml, see <code>src/main/resources/config.yml</code></p>
     </li>
 </ul>

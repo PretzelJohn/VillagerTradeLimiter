@@ -23,6 +23,9 @@ database:
 IgnoreCitizens: true
 IgnoreShopkeepers: true
 
+# Ignore interactions when the player is holding one of these item types (e.g. spawn_egg)
+IgnoreHeldItems: []
+
 # Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
 DisableTrading:
 - world_nether
