@@ -13,7 +13,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -45,7 +44,7 @@ public class PlayerListener implements Listener {
 
         //Skips when player is holding an ignored item
         Material heldItemType = player.getInventory().getItem(event.getHand()).getType();
-        for(String ignoredType : instance.getCfg().getStringList("IgnoredHeldItems")) {
+        for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
             if(heldItemType.equals(Material.matchMaterial(ignoredType))) {
                 event.setCancelled(true);
                 return;
