@@ -46,7 +46,6 @@ public class PlayerListener implements Listener {
         Material heldItemType = player.getInventory().getItem(event.getHand()).getType();
         for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
             if(heldItemType.equals(Material.matchMaterial(ignoredType))) {
-                event.setCancelled(true);
                 return;
             }
         }
