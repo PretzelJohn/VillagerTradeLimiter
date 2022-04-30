@@ -121,7 +121,7 @@ public class PlayerListener implements Listener {
                 setIngredient(override.getConfigurationSection("Result"), recipe.getResult());
             }
 
-            //Set the maximum number of uses (trades/day)
+            //Set the maximum number of uses (trades/restock)
             recipe.setMaxUses(getMaxUses(recipe, other));
         }
 
@@ -146,7 +146,10 @@ public class PlayerListener implements Listener {
     private int getDemand(final RecipeWrapper recipe) {
         int demand = recipe.getDemand();
         int maxDemand = settings.fetchInt(recipe, "MaxDemand", -1);
-        if(maxDemand >= 0 && demand > maxDemand) return maxDemand;
+        if(maxDemand >= 0 && demand > maxDemand) {
+            recipe.setDemand(maxDemand);
+            return maxDemand;
+        }
         return demand;
     }
 
@@ -162,8 +165,9 @@ public class PlayerListener implements Listener {
         int demand = getDemand(recipe);
         float priceMultiplier = recipe.getPriceMultiplier();
         int discount = -(int)(totalReputation * priceMultiplier) - (int)(hotvDiscount * basePrice) + Math.max(0, (int)(demand * priceMultiplier * basePrice));
+        //discount = -(265 * 0.05) - (0.3 * 1) + max(0, 94965314 * 0.05 * 1) = -13
 
-        double maxDiscount = settings.fetchDouble(recipe, "MaxDiscount", 0.3);
+        double maxDiscount = settings.fetchDouble(recipe, "MaxDiscount", 0.3); //0.1
         if(maxDiscount >= 0.0 && maxDiscount <= 1.0) {
             //Change the discount to the smaller MaxDiscount
             if(basePrice + discount < basePrice * (1.0 - maxDiscount)) {

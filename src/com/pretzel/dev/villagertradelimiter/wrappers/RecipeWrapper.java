@@ -26,6 +26,9 @@ public class RecipeWrapper {
         this.specialPrice = getSpecialPrice();
     }
 
+    /** @param demand The demand, which increases prices if you buy too often. Negative values are ignored. */
+    public void setDemand(int demand) { recipe.setInteger("demand", demand); }
+
     /** @param specialPrice The discount, which is added to the base price. A negative value will decrease the price, and a positive value will increase the price. */
     public void setSpecialPrice(int specialPrice) { recipe.setInteger("specialPrice", specialPrice); }
 
