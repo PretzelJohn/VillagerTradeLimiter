@@ -24,7 +24,9 @@ IgnoreCitizens: true
 IgnoreShopkeepers: true
 
 # Ignore interactions when the player is holding one of these item types (e.g. spawn_egg)
-IgnoreHeldItems: []
+# Ghast spawn egg is added to add compatibility with Safarinet plugin. If your server doesn't give ghast egg to noromal players you can ignore it.
+# Set to [] to disable this feature.
+IgnoreHeldItems: [ghast_spawn_egg]
 
 # Add world names for worlds that you want to completely disable ALL villager trading. Set to [] to disable this feature.
 DisableTrading:
