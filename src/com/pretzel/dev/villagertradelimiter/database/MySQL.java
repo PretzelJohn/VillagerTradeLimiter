@@ -25,7 +25,7 @@ public class MySQL extends Database {
         try {
             this.source.setCharacterEncoding(cfg.getString("encoding", "utf8"));
             this.source.setUseSSL(cfg.getBoolean("useSSL", false));
-        } catch (SQLException e) {}
+        } catch (SQLException ignored) {}
 
         this.test();
     }

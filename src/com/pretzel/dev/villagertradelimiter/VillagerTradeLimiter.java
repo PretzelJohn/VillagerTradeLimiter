@@ -107,18 +107,19 @@ public class VillagerTradeLimiter extends JavaPlugin {
 
 
     // ------------------------- Getters -------------------------
-    /** Returns the settings from config.yml */
+    /** @return the settings from config.yml */
     public FileConfiguration getCfg() { return this.cfg; }
 
-    /** Returns a language setting from messages.yml */
+    /** @param path the key you want the value for
+      * @return a language setting from messages.yml */
     public String getLang(final String path) { return this.lang.get(path); }
 
-    /** Returns this plugin's player listener */
+    /** @return this plugin's player listener */
     public PlayerListener getPlayerListener() { return this.playerListener; }
 
-    /** Returns a player's data container */
+    /** @return a player's data container */
     public HashMap<UUID, PlayerData> getPlayerData() { return this.playerData; }
 
-    /** Returns the invsee inventory's barrier block */
+    /** @return the invsee inventory's barrier block */
     public ItemStack getBarrier() { return this.commandManager.getBarrier(); }
 }

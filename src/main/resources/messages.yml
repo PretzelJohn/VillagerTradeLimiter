@@ -2,14 +2,14 @@
 help: |-
   [villagertradelimiter.use]&a----- VTL Commands -----
   [villagertradelimiter.use]&b/vtl;&fshows this help message
-  [villagertradelimiter.reload]&b/vtl reload;&freloads config.yml
+  [villagertradelimiter.reload]&b/vtl reload;&freloads config.yml and messages.yml
   [villagertradelimiter.see]&b/vtl see <player>;&fshows the adjusted trades for another player
 
 # Common messages:
 common:
   reloaded: "&eVillagerTradeLimiter (VTL) &ahas been reloaded!"
   noconsole: "&cYou cannot use this command from the console."
-  noargs: "&cNot enough arguments! For command usage, see /vtl"
+  noargs: "&cNot enough arguments! For command usage, see &b/vtl"
 
 # Messages for the /vtl see <player> command:
 see:
