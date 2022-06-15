@@ -1,6 +1,6 @@
 package com.pretzel.dev.villagertradelimiter.wrappers;
 
-import com.pretzel.dev.villagertradelimiter.nms.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,8 +1,8 @@
 package com.pretzel.dev.villagertradelimiter.wrappers;
 
-import com.pretzel.dev.villagertradelimiter.nms.NBTCompound;
-import com.pretzel.dev.villagertradelimiter.nms.NBTCompoundList;
-import com.pretzel.dev.villagertradelimiter.nms.NBTEntity;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTCompoundList;
+import de.tr7zw.changeme.nbtapi.NBTEntity;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;

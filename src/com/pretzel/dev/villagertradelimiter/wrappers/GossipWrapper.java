@@ -1,7 +1,7 @@
 package com.pretzel.dev.villagertradelimiter.wrappers;
 
 import com.pretzel.dev.villagertradelimiter.lib.Util;
-import com.pretzel.dev.villagertradelimiter.nms.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
 
 public class GossipWrapper {
     private final NBTCompound gossip;
