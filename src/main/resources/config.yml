@@ -19,6 +19,11 @@ database:
   encoding: utf8
   useSSL: false
 
+# Add world names for worlds that you want to have unaltered, vanilla villager trading in. Set to [] to disable this feature.
+DisableWorlds:
+- world_nether
+- world_the_end
+
 # Ignore Citizens NPCs, and/or Shopkeepers NPCs if true
 IgnoreCitizens: true
 IgnoreShopkeepers: true

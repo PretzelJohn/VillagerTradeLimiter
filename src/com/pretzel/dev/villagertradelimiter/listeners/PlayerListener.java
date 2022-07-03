@@ -3,6 +3,7 @@ package com.pretzel.dev.villagertradelimiter.listeners;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
+import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
 import com.pretzel.dev.villagertradelimiter.wrappers.*;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -42,11 +44,15 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final Villager villager = (Villager)event.getRightClicked();
 
+        //Skips when the villager is in a disabled world
+        if(instance.getCfg().getStringList("DisableWorlds").contains(villager.getWorld().getName())) return;
+
         //Skips when player is holding an ignored item
-        Material heldItemType = player.getInventory().getItem(event.getHand()).getType();
-        for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
-            if(heldItemType.equals(Material.matchMaterial(ignoredType))) {
-                return;
+        ItemStack heldItem = player.getInventory().getItem(event.getHand());
+        if(heldItem != null) {
+            Material heldItemType = heldItem.getType();
+            for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
+                if(heldItemType.equals(Material.matchMaterial(ignoredType))) return;
             }
         }
         if(settings.shouldSkipNPC(event.getPlayer()) || settings.shouldSkipNPC(villager)) return; //Skips NPCs
@@ -90,6 +96,12 @@ public class PlayerListener implements Listener {
      * @param other The other player to view trades for, or the player that has just begun trading
      */
     public void see(final Villager villager, final Player player, final OfflinePlayer other) {
+        //Skips when the villager is in a disabled world
+        if(instance.getCfg().getStringList("DisableWorlds").contains(villager.getWorld().getName())) {
+            Util.sendMsg(instance.getLang("see.noworld"), player);
+            return;
+        }
+
         //Wraps the villager and player into wrapper classes
         final VillagerWrapper villagerWrapper = new VillagerWrapper(villager);
         final PlayerWrapper otherWrapper = new PlayerWrapper(other);

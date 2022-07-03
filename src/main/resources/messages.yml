@@ -16,4 +16,5 @@ see:
   success: "&aShowing the adjusted trades for &b{player}&a..."
   noplayer: "&cInvalid player &b{player}&c! Please use a valid player's name."
   novillager: "&cInvalid entity! Please look at the villager you want to check."
+  noworld: "&cVTL is disabled in this world!"
 
