@@ -3,6 +3,7 @@ package com.pretzel.dev.villagertradelimiter.wrappers;
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTCompoundList;
 import de.tr7zw.changeme.nbtapi.NBTEntity;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -34,8 +35,8 @@ public class VillagerWrapper {
         final NBTCompound offers = entity.getCompound("Offers");
         if(offers == null) return recipes;
         final NBTCompoundList nbtRecipes = offers.getCompoundList("Recipes");
-        for(NBTCompound nbtRecipe : nbtRecipes) {
-            recipes.add(new RecipeWrapper(nbtRecipe));
+        for(ReadWriteNBT nbtRecipe : nbtRecipes) {
+            recipes.add(new RecipeWrapper((NBTCompound)nbtRecipe));
         }
         return recipes;
     }
@@ -43,12 +44,12 @@ public class VillagerWrapper {
     /** @return A list of wrapped gossips for the villager */
     private List<GossipWrapper> getGossips() {
         final List<GossipWrapper> gossips = new ArrayList<>();
-        if(!entity.hasKey("Gossips")) return gossips;
+        if(!entity.hasTag("Gossips")) return gossips;
 
         //Add the gossips from the villager's NBT data into a list of wrapped gossips
         final NBTCompoundList nbtGossips = entity.getCompoundList("Gossips");
-        for(NBTCompound nbtGossip : nbtGossips) {
-            gossips.add(new GossipWrapper(nbtGossip));
+        for(ReadWriteNBT nbtGossip : nbtGossips) {
+            gossips.add(new GossipWrapper((NBTCompound) nbtGossip));
         }
         return gossips;
     }

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.pretzel.dev</groupId>
   <artifactId>VillagerTradeLimiter</artifactId>
-  <version>1.5.9</version>
+  <version>1.6.0</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>

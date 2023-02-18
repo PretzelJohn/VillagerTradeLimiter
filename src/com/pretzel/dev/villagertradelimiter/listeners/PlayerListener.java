@@ -48,7 +48,7 @@ public class PlayerListener implements Listener {
         if(instance.getCfg().getStringList("DisableWorlds").contains(villager.getWorld().getName())) return;
 
         //Skips when player is holding an ignored item
-        ItemStack heldItem = player.getInventory().getItem(event.getHand());
+        ItemStack heldItem = player.getInventory().getItem(event.getHand().ordinal());
         if(heldItem != null) {
             Material heldItemType = heldItem.getType();
             for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
         }
 
         //Cancel the original event, and open the adjusted trade view
-        event.setCancelled(true);
+        //event.setCancelled(true);
         if(!instance.getPlayerData().containsKey(player.getUniqueId())) {
             instance.getPlayerData().put(player.getUniqueId(), new PlayerData());
         }
