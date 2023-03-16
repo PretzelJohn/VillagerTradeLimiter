@@ -4,15 +4,19 @@ import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
+import org.bukkit.event.entity.VillagerCareerChangeEvent;
 import org.bukkit.event.entity.VillagerReplenishTradeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class VillagerListener implements Listener {
@@ -26,6 +30,41 @@ public class VillagerListener implements Listener {
     public VillagerListener(final VillagerTradeLimiter instance, final Settings settings) {
         this.instance = instance;
         this.settings = settings;
+    }
+
+    /** Handles villager promotions */
+    @EventHandler
+    public void onVillagerPromotion(final VillagerAcquireTradeEvent event) {
+        //Gets the items in the trade
+        final MerchantRecipe recipe = event.getRecipe();
+        List<ItemStack> items = recipe.getIngredients();
+        items.add(recipe.getResult());
+
+        //Gets the disabled item list from config
+        List<String> disabledItems = instance.getCfg().getStringList("DisableItems");
+
+        //Checks each item if it should be removed from the trade list
+        for(ItemStack item : items) {
+            if(disabledItems.contains(item.getType().name().toLowerCase())) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    /** Handles villager profession change **/
+    @EventHandler
+    public void onVillagerChangeProfession(final VillagerCareerChangeEvent event) {
+        //Gets the new profession
+        final Villager.Profession profession = event.getProfession();
+
+        //Gets the disabled profession list from config
+        List<String> disabledProfessions = instance.getCfg().getStringList("DisableProfessions");
+
+        //Changes the new profession to none if disabled in config
+        if(disabledProfessions.contains(profession.name().toLowerCase())) {
+            event.setProfession(Villager.Profession.NONE);
+        }
     }
 
     /** Handles villager restocks */

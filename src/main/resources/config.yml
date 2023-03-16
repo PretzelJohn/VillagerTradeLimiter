@@ -41,6 +41,13 @@ DisableTrading:
 - world_nether
 - world_the_end
 
+# Add profession names that you want to prevent villagers from acquiring
+DisableProfessions: []
+
+# Add item names that you want to prevent villagers from offering as trades.
+# This is a permanent change. The items can't be re-added to the villager's trades.
+DisableItems: []
+
 # The maximum level of the "Hero of the Village" (HotV) effect that a player can have. This limits HotV price decreases.
 #   * Set to -1 to disable this feature and keep vanilla behavior.
 #   * Set to a number between 0 and 5 to set the maximum HotV effect level players can have
