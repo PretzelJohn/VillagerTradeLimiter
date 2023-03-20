@@ -4,7 +4,6 @@ import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,9 +44,11 @@ public class VillagerListener implements Listener {
 
         //Checks each item if it should be removed from the trade list
         for(ItemStack item : items) {
-            if(disabledItems.contains(item.getType().name().toLowerCase())) {
-                event.setCancelled(true);
-                return;
+            for(String disabledItem : disabledItems) {
+                if(disabledItem.equalsIgnoreCase(item.getType().name())) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
     }
@@ -62,8 +63,11 @@ public class VillagerListener implements Listener {
         List<String> disabledProfessions = instance.getCfg().getStringList("DisableProfessions");
 
         //Changes the new profession to none if disabled in config
-        if(disabledProfessions.contains(profession.name().toLowerCase())) {
-            event.setProfession(Villager.Profession.NONE);
+        for(String disabledProfession : disabledProfessions) {
+            if(disabledProfession.equalsIgnoreCase(profession.name())) {
+                event.setProfession(Villager.Profession.NONE);
+                return;
+            }
         }
     }
 
