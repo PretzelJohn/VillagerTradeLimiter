@@ -12,6 +12,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
+import java.util.Arrays;
+
 public class Settings {
     private final VillagerTradeLimiter instance;
 
@@ -114,11 +116,10 @@ public class Settings {
      */
     public ConfigurationSection getOverride(final ItemStack buy, ItemStack sell) {
         final ConfigurationSection overrides = instance.getCfg().getConfigurationSection("Overrides");
-        if(overrides != null) {
-            for(final String override : overrides.getKeys(false)) {
-                final ConfigurationSection item = this.getItem(buy, sell, override);
-                if(item != null) return item;
-            }
+        if(overrides == null) return null;
+        for(final String override : overrides.getKeys(false)) {
+            final ConfigurationSection item = this.getItem(buy, sell, override);
+            if(item != null) return item;
         }
         return null;
     }
@@ -129,30 +130,40 @@ public class Settings {
      * @param key The key where the override settings are stored in config.yml
      * @return The corresponding override config section for the recipe, if it exists, or null
      */
-    public ConfigurationSection getItem(final ItemStack buy, final ItemStack sell, final String key) {
+    public ConfigurationSection getItem(final ItemStack buy, final ItemStack sell, String key) {
         final ConfigurationSection item = instance.getCfg().getConfigurationSection("Overrides."+key);
         if(item == null) return null;
 
+        String match = "both";
         if(!key.contains("_")) {
             //Return the item if the item name is valid
-            if(this.verify(buy, sell, Material.matchMaterial(key))) return item;
+            if(verify(buy, sell, match, Material.matchMaterial(key))) return item;
             return null;
         }
 
-        final String[] words = key.split("_");
+        String[] words = key.split("_");
+        if(words[words.length-1].equalsIgnoreCase("left")) {
+            match = "left";
+            key = key.replace("_left", "");
+            words = Arrays.copyOf(words, words.length-1);
+        } else if(words[words.length-1].equalsIgnoreCase("right")) {
+            match = "right";
+            key = key.replace("_right", "");
+            words = Arrays.copyOf(words, words.length-1);
+        }
+
         try {
             //Return the enchanted book item if there's a number in the item name
             final int level = Integer.parseInt(words[words.length-1]);
             if(sell.getType() == Material.ENCHANTED_BOOK) {
                 final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) sell.getItemMeta();
                 final Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(key.substring(0, key.lastIndexOf("_"))));
-                if (meta == null || enchantment == null) return null;
-                if (meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
+                if(meta == null || enchantment == null) return null;
+                if(meta.hasStoredEnchant(enchantment) && meta.getStoredEnchantLevel(enchantment) == level) return item;
             }
         } catch(NumberFormatException e) {
             //Return the item if the item name is valid
-            if(this.verify(buy, sell, Material.matchMaterial(key)))
-                return item;
+            if(verify(buy, sell, match, Material.matchMaterial(key))) return item;
             return null;
         } catch(Exception e2) {
             //Send an error message
@@ -167,7 +178,14 @@ public class Settings {
      * @param material The material to compare the recipe against
      * @return True if a recipe matches an override section, false otherwise
      */
-    private boolean verify(final ItemStack buy, final ItemStack sell, final Material material) {
+    private boolean verify(final ItemStack buy, final ItemStack sell, final String match, final Material material) {
+        if(match.equals("left")) {
+            if(buy == null) return false;
+            return buy.getType().equals(material);
+        } else if(match.equals("right")) {
+            if(sell == null) return false;
+            return sell.getType().equals(material);
+        }
         if(buy == null && sell == null) return false;
         if(buy == null) return sell.getType() == material;
         if(sell == null) return buy.getType() == material;
