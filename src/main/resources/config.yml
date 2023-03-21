@@ -119,9 +119,9 @@ Overrides:
       Material: "name_tag"
       Amount: 2
   flint_left:
-    MaxUses: 1
-  flint_right:
     MaxUses: 8
+  flint_right:
+    MaxUses: 1
   clock:
     MaxDemand: 12
   paper:
