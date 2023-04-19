@@ -48,7 +48,7 @@ public class PlayerListener implements Listener {
         if(instance.getCfg().getStringList("DisableWorlds").contains(villager.getWorld().getName())) return;
 
         //Skips when player is holding an ignored item
-        ItemStack heldItem = player.getInventory().getItem(event.getHand().ordinal());
+        ItemStack heldItem = player.getInventory().getItem(event.getHand());
         if(heldItem != null) {
             Material heldItemType = heldItem.getType();
             for(String ignoredType : instance.getCfg().getStringList("IgnoreHeldItems")) {
