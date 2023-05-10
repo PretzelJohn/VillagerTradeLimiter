@@ -20,9 +20,9 @@ public class RecipeWrapper {
     /** @param recipe The NBTCompound that contains the villager's NBT data of the recipe */
     public RecipeWrapper(final NBTCompound recipe) {
         this.recipe = recipe;
-        this.ingredient1 = new IngredientWrapper(recipe.getCompound("buy"));
-        this.ingredient2 = new IngredientWrapper(recipe.getCompound("buyB"));
-        this.result = new IngredientWrapper(recipe.getCompound("sell"));
+        this.ingredient1 = new IngredientWrapper(recipe, "buy");
+        this.ingredient2 = new IngredientWrapper(recipe, "buyB");
+        this.result = new IngredientWrapper(recipe, "sell");
         this.specialPrice = getSpecialPrice();
     }
 

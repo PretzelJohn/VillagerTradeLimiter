@@ -5,7 +5,13 @@ import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
-import com.pretzel.dev.villagertradelimiter.wrappers.*;
+import com.pretzel.dev.villagertradelimiter.wrappers.IngredientWrapper;
+import com.pretzel.dev.villagertradelimiter.wrappers.PlayerWrapper;
+import com.pretzel.dev.villagertradelimiter.wrappers.RecipeWrapper;
+import com.pretzel.dev.villagertradelimiter.wrappers.VillagerWrapper;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,10 +23,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
 
 public class PlayerListener implements Listener {
     private final VillagerTradeLimiter instance;
@@ -146,7 +148,7 @@ public class PlayerListener implements Listener {
      * @return The initial price of a recipe/trade, before any discounts are applied
      */
     private int getBasePrice(final RecipeWrapper recipe) {
-        int basePrice = recipe.getIngredient1().getAmount();
+        int basePrice = recipe.getIngredient1().getItemStack().getAmount();
         basePrice = settings.fetchInt(recipe, "Item1.Amount", basePrice);
         return Math.min(Math.max(basePrice, 1), 64);
     }
@@ -260,7 +262,13 @@ public class PlayerListener implements Listener {
      */
     private void setIngredient(final ConfigurationSection item, final IngredientWrapper ingredient) {
         if(item == null) return;
-        ingredient.setMaterialId("minecraft:"+item.getString("Material", ingredient.getMaterialId()).toLowerCase().replace("minecraft:",""));
-        ingredient.setAmount(item.getInt("Amount", ingredient.getAmount()));
+        ItemStack previous = ingredient.getItemStack();
+        Material material = Material.matchMaterial(item.getString("Material", previous.getType().getKey().getKey()));
+        if (material != null) {
+            ingredient.setItemStack(new ItemStack(
+                material,
+                item.getInt("Amount", previous.getAmount())
+            ));
+        }
     }
 }
