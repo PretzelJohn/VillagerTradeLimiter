@@ -8,6 +8,7 @@ import com.pretzel.dev.villagertradelimiter.wrappers.VillagerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -48,7 +49,7 @@ public class InventoryListener implements Listener {
         //If the inventory matches the invsee inventory, cancel click events
         event.setCancelled(true);
         if(event.getCurrentItem() != null && event.getCurrentItem().isSimilar(instance.getBarrier())) {
-            Bukkit.getScheduler().runTaskLater(instance, () -> event.getWhoClicked().closeInventory(), 0L);
+            instance.getScheduler().runEntity(event.getWhoClicked(), HumanEntity::closeInventory);
         }
     }
 
@@ -115,7 +116,7 @@ public class InventoryListener implements Listener {
         final PlayerData playerData = instance.getPlayerData().get(player.getUniqueId());
         final PlayerData villagerData = instance.getPlayerData().get(villager.getUniqueId());
         if(playerData == null || playerData.getTradingVillager() == null) return;
-        Bukkit.getScheduler().runTaskLater(instance, () -> {
+        instance.getScheduler().runAsync(() -> {
             int uses = selectedRecipe.getUses();
             final String time = Cooldown.formatTime(Date.from(Instant.now()));
             if(uses >= selectedRecipe.getMaxUses()) {
@@ -126,7 +127,7 @@ public class InventoryListener implements Listener {
                     villagerData.getTradingCooldowns().put(type, time);
                 }
             }
-        }, 1);
+        });
     }
 
     /**

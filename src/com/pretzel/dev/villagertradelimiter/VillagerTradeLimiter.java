@@ -6,13 +6,15 @@ import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.database.DatabaseManager;
 import com.pretzel.dev.villagertradelimiter.listeners.InventoryListener;
 import com.pretzel.dev.villagertradelimiter.listeners.VillagerListener;
+import com.pretzel.dev.villagertradelimiter.scheduler.BukkitSchedulerAdapter;
+import com.pretzel.dev.villagertradelimiter.scheduler.FoliaSchedulerAdapter;
+import com.pretzel.dev.villagertradelimiter.scheduler.SchedulerAdapter;
 import com.pretzel.dev.villagertradelimiter.settings.ConfigUpdater;
 import com.pretzel.dev.villagertradelimiter.lib.Metrics;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
 import com.pretzel.dev.villagertradelimiter.listeners.PlayerListener;
 import com.pretzel.dev.villagertradelimiter.settings.Lang;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,6 +29,9 @@ public class VillagerTradeLimiter extends JavaPlugin {
     public static final String PLUGIN_NAME = "VillagerTradeLimiter";
     public static final String PREFIX = ChatColor.GOLD+"["+PLUGIN_NAME+"] ";
     private static final int BSTATS_ID = 9829;
+
+    private final SchedulerAdapter scheduler = FoliaSchedulerAdapter.isSupported()
+        ? new FoliaSchedulerAdapter(this) : new BukkitSchedulerAdapter(this);
 
     //Settings
     private FileConfiguration cfg;
@@ -123,4 +128,8 @@ public class VillagerTradeLimiter extends JavaPlugin {
 
     /** @return the invsee inventory's barrier block */
     public ItemStack getBarrier() { return this.commandManager.getBarrier(); }
+
+    public SchedulerAdapter getScheduler() {
+        return this.scheduler;
+    }
 }

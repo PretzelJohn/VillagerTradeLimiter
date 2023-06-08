@@ -1,29 +1,26 @@
 package com.pretzel.dev.villagertradelimiter.database;
 
+import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.lib.Callback;
 import com.pretzel.dev.villagertradelimiter.lib.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class Database {
-    protected final JavaPlugin instance;
+    protected final VillagerTradeLimiter instance;
 
-    public Database(final JavaPlugin instance) {
+    public Database(final VillagerTradeLimiter instance) {
         this.instance = instance;
     }
 
     //Tests a DataSource
     public void test() {
         try {
-            try (Connection conn = this.getSource().getConnection()) {
+            try (Connection conn = this.getConnection()) {
                 if (!conn.isValid(1000)) throw new SQLException("Could not connect to database!");
                 else Util.consoleMsg("Connected to database!");
             }
@@ -34,7 +31,7 @@ public abstract class Database {
 
     //Executes a statement or query in the database
     public ArrayList<String> execute(final String sql, boolean query) {
-        try(Connection conn = this.getSource().getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
+        try(Connection conn = this.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
             if(query) {
                 final ResultSet result = statement.executeQuery();
                 int columns = result.getMetaData().getColumnCount();
@@ -53,13 +50,13 @@ public abstract class Database {
         return null;
     }
     public void execute(final String sql, boolean query, final Callback<ArrayList<String>> callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.instance, () -> {
+        instance.getScheduler().runAsync(() -> {
             final ArrayList<String> result = execute(sql, query);
-            if(callback != null) Bukkit.getScheduler().runTask(this.instance, () -> callback.call(result));
+            if(callback != null) instance.getScheduler().runAsync(() -> callback.call(result));
         });
     }
 
     public abstract void load(final ConfigurationSection cfg);
     public abstract boolean isMySQL();
-    protected abstract DataSource getSource();
+    protected abstract Connection getConnection() throws SQLException;
 }

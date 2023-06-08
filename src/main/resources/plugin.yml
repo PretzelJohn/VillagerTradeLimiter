@@ -3,6 +3,7 @@ author: PretzelJohn
 main: com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter
 version: 1.6.3
 api-version: 1.14
+folia-supported: true
 
 commands:
   villagertradelimiter:
