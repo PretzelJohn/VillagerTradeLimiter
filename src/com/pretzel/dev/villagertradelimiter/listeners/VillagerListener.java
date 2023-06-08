@@ -1,9 +1,11 @@
 package com.pretzel.dev.villagertradelimiter.listeners;
 
+import com.google.common.collect.Iterables;
 import com.pretzel.dev.villagertradelimiter.VillagerTradeLimiter;
 import com.pretzel.dev.villagertradelimiter.data.Cooldown;
 import com.pretzel.dev.villagertradelimiter.data.PlayerData;
 import com.pretzel.dev.villagertradelimiter.settings.Settings;
+import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,8 +83,8 @@ public class VillagerListener implements Listener {
         //Get the items involved in the restock
         final MerchantRecipe recipe = event.getRecipe();
         final ItemStack result = recipe.getResult();
-        ItemStack ingredient1 = recipe.getIngredients().get(0);
-        ItemStack ingredient2 = recipe.getIngredients().get(1);
+        ItemStack ingredient1 = Iterables.get(recipe.getIngredients(), 0, new ItemStack(Material.AIR));
+        ItemStack ingredient2 = Iterables.get(recipe.getIngredients(), 1, new ItemStack(Material.AIR));
         final String type = settings.getType(result, ingredient1, ingredient2);
 
         //Get the villager's data container
