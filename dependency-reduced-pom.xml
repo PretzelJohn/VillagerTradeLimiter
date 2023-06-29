@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.pretzel.dev</groupId>
   <artifactId>VillagerTradeLimiter</artifactId>
-  <version>1.6.3</version>
+  <version>1.6.4</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.19.4-R0.1-SNAPSHOT</version>
+      <version>1.20-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -80,14 +80,8 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.30</version>
+      <version>8.0.33</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>protobuf-java</artifactId>
-          <groupId>com.google.protobuf</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>
